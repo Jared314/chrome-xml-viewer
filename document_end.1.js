@@ -1,9 +1,3 @@
-Node.prototype.appendChildren = function(children){
-	for(var i=0;i<children.length;i++){
-		this.appendChild(children[i]);
-	}
-};
-
 NodeList.prototype.filter = function(callback){
 	var result = new Array();
 	for(var i=0;i<this.length;i++)
@@ -61,8 +55,6 @@ function isViewSource(targetDocument){
 }
 
 if(!isViewSource(document)){
-	//Debug
-	console.log(window);
 	
 	//Attach CSS file
 	var cssPath = chrome.extension.getURL('xml.css');
