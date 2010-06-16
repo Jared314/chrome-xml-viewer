@@ -49,6 +49,7 @@ span[class="content"]{
 /* 
  * Processing Instructions 
  */
+
 [class*="processing-instruction"] {
 	color:gray;
 }
@@ -62,3 +63,21 @@ span[class="content"]{
 }
 
 
+
+/* 
+ * CData 
+ */
+
+[class*="cdata"] {
+	color:black;
+}
+
+[class*="cdata"]:before {
+	color:blue;
+	content:'<![CDATA[';
+}
+
+[class*="cdata"]:after {
+	color:blue;
+	content:']]>';
+}
