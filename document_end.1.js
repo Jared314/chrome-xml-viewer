@@ -66,7 +66,7 @@ if(!isViewSource(document)){
 	console.log(window);
 	
 	//Attach CSS file
-	var cssPath = chrome.extension.getURL('test.css');
+	var cssPath = chrome.extension.getURL('xml.css');
 	var pi = document.createProcessingInstruction('xml-stylesheet', 'type="text/css" href="'+cssPath+'"');
 	document.insertBefore(pi, document.firstChild);
 
