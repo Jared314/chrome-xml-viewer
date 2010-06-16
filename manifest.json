@@ -1,0 +1,11 @@
+{
+   "name": "XML Highlighter",
+   "version": "0.1",
+   "description": "Highlights XML",
+
+   "content_scripts": [ {
+      "js": [ "document_end.1.js" ],
+      "matches": [ "file:///*/*.xml" ],
+      "run_at": "document_end"
+    } ]
+}

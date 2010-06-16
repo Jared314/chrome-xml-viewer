@@ -1,0 +1,58 @@
+* {
+	font-family:Courier New, serif;
+	font-size:11pt;
+	padding-left:1.5em;
+	display:block;
+}
+[class*="tag"] {
+	color:DarkRed;
+	padding-left:0em;
+}
+span[class="content"]{
+	color:black;
+	font-weight:bold;
+}
+
+
+
+/* 
+ * Nodes
+ */
+ 
+[class*="tag"]:before{
+	color:blue;
+	content:'<';
+}
+
+[class*="end"]:before {
+	color:blue;
+	content:'</';
+}
+
+[class*="tag"]:after {
+	color:blue;
+	content:'>';
+}
+[class*="single"]:after {
+	color:blue;
+	content:'/>';
+}
+
+
+
+/* 
+ * Processing Instructions 
+ */
+[class*="processing-instruction"] {
+	color:gray;
+}
+
+[class*="processing-instruction"]:before {
+	content:'<?';
+}
+
+[class*="processing-instruction"]:after {
+	content:'?>';
+}
+
+
