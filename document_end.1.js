@@ -5,57 +5,98 @@ NodeList.prototype.filter = function(callback){
 	return result;
 };
 
-function wrapNode(node, tagName, className){
-	var s = document.createElement(tagName);
-	s.setAttribute('class', className);
-	var p = node.parentNode;
-	s.appendChild(node);
+NodeList.prototype.reParent = function(newParent){
+	for(var i=0;i<this.length;i++)
+		newParent.appendChild(this[i]);
+}
+
+Node.prototype.wrap = function(tagName, className){
+	var s = this.ownerDocument.createElement(tagName);
+	if(className) s.setAttribute('class', className);
+	var p = this.parentNode;
+	s.appendChild(this);
 	if(p != null) p.appendChild(s);
 	return s;
-}
+};
+
+NamedNodeMap.prototype.toNode = function(tagName, nameClassName, valueClassName, attributeClassName, groupClassName){
+	var result = document.createElement(tagName);
+	if(groupClassName) result.setAttribute('class', groupClassName);
+	
+	for(var i=0;i<this.length;i++){
+		var r1 = document.createElement(tagName);
+		if(attributeClassName) r1.setAttribute('class', attributeClassName);
+		r1.appendChild(this[i].nodeName.toNode(document, tagName, nameClassName));
+		r1.appendChild(this[i].nodeValue.toNode(document, tagName, valueClassName));
+		result.appendChild(r1);
+	}
+	
+	return result;
+};
+
+String.prototype.toNode = function(targetDocument, tagName, className){
+	var result = targetDocument.createTextNode(this);
+	if(tagName) result = result.wrap(tagName, className);
+	return result;
+};
 
 function formatAttributes(node){
 	var result = null;
+
 	if(node.hasAttributes())
-		for(var i=0;i<node.attributes.length;i++){
-			node.attributes
-		}
+		result = node.attributes.toNode('span', 'webkit-html-attribute-name', 'webkit-html-attribute-value', 'webkit-html-attribute', 'webkit-html-attribute-set');
 	
 	return result;
 }
 
-function formatNode(node){
-	var result = document.createTextNode(node.nodeName.toLowerCase());
-	if(node.hasAttributes()){
-		var attrs = formatAttributes(node);
-		if(attrs) result.appendChild(attrs);
-	}
+function buildNodeWithAttributes(node, tagName, className){
+	var result = node.nodeName.toLowerCase();
+	result = result.toNode(document,tagName, className);
 	
+	
+	var attrs = formatAttributes(node);
+	if(attrs) result.appendChild(attrs);
+
 	return result;
 }
 
-function formatEndNode(node){
-	return document.createTextNode(node.nodeName.toLowerCase());
+function buildEndNode(node, tagName, className){
+	return node.nodeName.toLowerCase().toNode(document, tagName, className);
 }
 
-function wrapNonTextNode(node){
+
+
+
+
+function wrapElementNode(node){
+	//Create New wrapper node
+	var result = document.createElement('div');		
+	result.setAttribute('name',node.nodeName);
+	result.setAttribute('class', 'tag');	
+
 	if(node.hasChildNodes()){
-		var s = document.createElement('span');
-		s.setAttribute('class', 'tag start');
-		s.appendChild(formatNode(node));
-		node.insertBefore(s, node.firstChild);
-		
-		var e = document.createElement('span');
-		e.setAttribute('class', 'tag end');
-		e.appendChild(formatEndNode(node));
-		node.appendChild(e);
+		//Move Children
+		var contentEl = document.createElement('div');
+		contentEl.setAttribute('class','tag-content');
+		node.childNodes.reParent(contentEl);
+
+		//Attach Nodes
+		result.appendChild(buildNodeWithAttributes(node, 'div', 'tag-start'));
+		result.appendChild(contentEl);
+		result.appendChild(buildEndNode(node, 'div', 'tag-end'));
 	}else{
-		var s = document.createElement('span');
-		s.setAttribute('class', 'tag start single');
-		s.appendChild(formatNode(node));
-		node.appendChild(s);
-	}
 	
+		var s = buildNodeWithAttributes(node, 'div', 'tag-single');
+		result.appendChild(s);
+	}
+
+	if(node.parentNode)
+		node.parentNode.replaceChild(result, node);
+	
+	return result;
+}
+
+function buildProcessingInstructionNode(node){
 	return node;
 }
 
@@ -71,11 +112,13 @@ function processNode(node){
 
 	// Wrap node
 	if(node.nodeType == 1) //Element
-		return wrapNonTextNode(node);
+		return wrapElementNode(node);
 	else if(node.nodeType == 3) //Text
-		return wrapNode(node, 'span', 'content');
+		return node.wrap('div', 'content');
 	else if(node.nodeType == 4) //CData
-		return wrapNode(node, 'pre', 'cdata');
+		return node.wrap('pre', 'cdata');
+	else if(node.nodeType == 7) //Processing Instruction
+		return buildProcessingInstructionNode(node);
 }
 
 
@@ -85,7 +128,22 @@ function isViewSource(targetDocument){
 	return targetDocument.body != null;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 if(!isViewSource(document)){
+	console.log(window);
 	
 	//Transform DOM Nodes
 	var nodes = document.childNodes;
@@ -97,42 +155,16 @@ if(!isViewSource(document)){
 	var cssPath = chrome.extension.getURL('xml.css');
 	var pi = document.createProcessingInstruction('xml-stylesheet', 'type="text/css" href="'+cssPath+'"');
 	document.insertBefore(pi, document.firstChild);
-	
+
 	//Wrap Document
-	var root = wrapNode(document.documentElement, 'div', 'document');
+	var root = document.documentElement.wrap('div', 'document');
 	
 	//Add fake XML Processing Instruction
-	var xmlStandaloneText = document.xmlStandalone ? 'yes' : 'no';
-	var xmlTextNode = document.createTextNode('xml version="'+document.xmlVersion+'" encoding="'+document.xmlEncoding+'" standalone="'+xmlStandaloneText+'" ');
-	var x = wrapNode(xmlTextNode, 'span', 'processing-instruction');
-	root.insertBefore(x, root.firstChild);
-	
-}
-/*
-else{
-	//Todo: add processing instructions to the view-source
-	//		currently does not show correct xml version, encoding, and standalone value
-	
-	var tbody = document.getElementsByTagName("tbody")[0];
-	if(tbody && tbody.hasChildNodes()){
-	
-		var row = document.createElement("TR");
-		var td1 = document.createElement("TD");
-		td1.setAttribute('class', 'webkit-line-number');
-		row.appendChild(td1);
-		
-		var td2 = document.createElement("TD");
-		td2.setAttribute('class', 'webkit-line-content');
-		row.appendChild(td2);
-		
-		//Add fake XML Processing Instruction
+	if(document.xmlVersion){
 		var xmlStandaloneText = document.xmlStandalone ? 'yes' : 'no';
-		var xmlTextNode = document.createTextNode('<?xml version="'+document.xmlVersion+'" encoding="'+document.xmlEncoding+'" standalone="'+xmlStandaloneText+'" ?>');
-		var x = wrapNode(xmlTextNode, 'SPAN', 'webkit-html-tag');
-		td2.appendChild(x);
-		
-		tbody.insertBefore(row, tbody.firstChild);
+		var xmlEncodingText = document.xmlEncoding ? document.xmlEncoding : document.inputEncoding;
+		var xmlTextNode = 'xml version="'+document.xmlVersion+'" encoding="'+xmlEncodingText+'" standalone="'+xmlStandaloneText+'" ';
+		xmlTextNode = xmlTextNode.toNode(document,'div', 'processing-instruction');
+		root.insertBefore(xmlTextNode, root.firstChild);
 	}
-
 }
-*/

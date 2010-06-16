@@ -1,49 +1,56 @@
 * {
 	font-family:Courier New, serif;
 	font-size:11pt;
-	padding-left:1.5em;
+	padding-left:1em;
 	display:block;
 }
+
+[class="inline"]{
+	display:inline;
+}
+
 
 /* 
  * Content
  */
  
-span[class="content"]{
+[class="content"]{
 	color:black;
 	font-weight:bold;
 }
-
 
 
 /* 
  * Tags
  */
 
-[class*="tag"] {
+[class*="tag-start"], [class*="tag-end"], [class*="tag-single"] {
 	color:DarkRed;
 	padding-left:0em;
 }
  
-[class*="tag"]:before{
+[class*="tag-start"]:before, [class*="tag-single"]:before{
 	color:blue;
 	content:'<';
 }
 
-[class*="end"]:before {
+[class*="tag-end"]:before{
 	color:blue;
 	content:'</';
 }
 
-[class*="tag"]:after {
+[class*="tag-start"]:after, [class*="tag-end"]:after{
 	color:blue;
 	content:'>';
 }
-[class*="single"]:after {
+[class*="tag-single"]:after{
 	color:blue;
 	content:'/>';
 }
 
+[class*="tag-start"] [class*="content"] {
+/*	padding-left:0em;*/
+}
 
 
 /* 
@@ -81,3 +88,43 @@ span[class="content"]{
 	color:blue;
 	content:']]>';
 }
+
+
+
+/*
+ * Attributes
+ */
+[class="webkit-html-attribute-name"]{
+	display:inline;
+	padding-left:0em;
+}
+[class="webkit-html-attribute-value"]{
+	display:inline;
+	padding-left:0em;
+}
+
+[class="webkit-html-attribute-name"]:before {
+	content:' ';
+}
+
+[class="webkit-html-attribute-name"]:after {
+	content:'=';
+}
+ 
+[class="webkit-html-attribute-value"]:before, [class="webkit-html-attribute-value"]:after {
+	content:'"';
+}
+
+[class="webkit-html-attribute"]{
+	display:inline;
+	padding-left:0em;
+}
+
+[class="webkit-html-attribute-set"]{
+	display:inline;
+	padding-left:0em;
+}
+
+
+
+
