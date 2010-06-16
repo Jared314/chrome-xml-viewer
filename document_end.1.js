@@ -1,25 +1,24 @@
-/*
-String.prototype.trim = function(){
-	return this.replace(/[\\n\\r\\s]+/gi, "");
+Node.prototype.appendChildren = function(children){
+	for(var i=0;i<children.length;i++){
+		this.appendChild(children[i]);
+	}
 };
-*/
 
-function wrapProcessingInstruction(node){
-	var s = document.createElement('span');
-	s.setAttribute('class', 'processing-instruction');
+NodeList.prototype.filter = function(callback){
+	var result = new Array();
+	for(var i=0;i<this.length;i++)
+		if(callback(this[i]))result.push(this[i]);
+	return result;
+};
+
+function wrapNode(node, tagName, className){
+	var s = document.createElement(tagName);
+	s.setAttribute('class', className);
 	var p = node.parentNode;
 	s.appendChild(node);
-	p.appendChild(s, node);
+	if(p != null) p.appendChild(s);
+	return s;
 }
-
-function wrapTextNode(node){
-	var s = document.createElement('span');
-	s.setAttribute('class', 'content');
-	var p = node.parentNode;
-	s.appendChild(node);
-	p.appendChild(s, node);
-}
-
 
 function wrapNonTextNode(node){
 	if(node.hasChildNodes()){
@@ -38,13 +37,8 @@ function wrapNonTextNode(node){
 		s.appendChild(document.createTextNode(node.nodeName.toLowerCase()));
 		node.appendChild(s);
 	}
-}
-
-function wrap(node){
-	if(node.nodeType == 1)
-		wrapNonTextNode(node);
-	else if(node.nodeType == 3)
-		wrapTextNode(node);
+	
+	return node;
 }
 
 function processNode(node){
@@ -52,8 +46,13 @@ function processNode(node){
 		for(var i=0;i<node.childNodes.length;i++)
 			processNode(node.childNodes[i]);
 
-	wrap(node);
+	// Wrap node
+	if(node.nodeType == 1)
+		return wrapNonTextNode(node);
+	else if(node.nodeType == 3)
+		return wrapNode(node, 'span', 'content');
 }
+
 
 
 function isViewSource(targetDocument){
@@ -61,8 +60,8 @@ function isViewSource(targetDocument){
 	return targetDocument.body != null;
 }
 
-
 if(!isViewSource(document)){
+	//Debug
 	console.log(window);
 	
 	//Attach CSS file
@@ -70,12 +69,19 @@ if(!isViewSource(document)){
 	var pi = document.createProcessingInstruction('xml-stylesheet', 'type="text/css" href="'+cssPath+'"');
 	document.insertBefore(pi, document.firstChild);
 
-	//Add XML Processing Instruction
-	
 	//Transform DOM Nodes
 	var nodes = document.childNodes;
 	for(var i=0;i<nodes.length;i++)
 		if(nodes[i].nodeType == 1)
 			processNode(nodes[i]);
+	
+	//Wrap Document
+	var root = wrapNode(document.documentElement, 'div', 'document');
+	
+	//Add fake XML Processing Instruction
+	var xmlStandaloneText = document.xmlStandalone ? 'yes' : 'no';
+	var xmlTextNode = document.createTextNode('xml version="'+document.xmlVersion+'" encoding="'+document.xmlEncoding+'" standalone="'+xmlStandaloneText+'"');
+	var x = wrapNode(xmlTextNode, 'span', 'processing-instruction');
+	root.insertBefore(x, root.firstChild);
 }
 
