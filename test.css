@@ -4,10 +4,11 @@
 	padding-left:1.5em;
 	display:block;
 }
-[class*="tag"] {
-	color:DarkRed;
-	padding-left:0em;
-}
+
+/* 
+ * Content
+ */
+ 
 span[class="content"]{
 	color:black;
 	font-weight:bold;
@@ -16,8 +17,13 @@ span[class="content"]{
 
 
 /* 
- * Nodes
+ * Tags
  */
+
+[class*="tag"] {
+	color:DarkRed;
+	padding-left:0em;
+}
  
 [class*="tag"]:before{
 	color:blue;
