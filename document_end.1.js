@@ -46,11 +46,14 @@ function buildElementNode(node, newChildren){
 		result.appendChild(s);
 	}
 	
-	if(isTagInline) result.setAttribute('class', 'tag-inline');
-	
+	if(isTagInline) 
+		result.setAttribute('class', 'tag-inline');
+	else{ // Attach collapse handler
+		result.firstChild.addEventListener("click", expandCollapseHandler, false);
+	}
 	if(node.parentNode)
 		node.parentNode.replaceChild(result, node);
-
+	
 	return result;
 }
 
@@ -92,7 +95,21 @@ function isViewSource(targetDocument){
 
 
 
-
+//Event Handler
+function expandCollapseHandler(event){
+	event.cancelBubble = true;
+console.log(event);
+	if(!event.target.collapsedNodes)
+		event.target.collapsedNodes = document.createElement('div');
+	
+	if(event.target.collapsedNodes.hasChildNodes()){
+		event.target.collapsedNodes.childNodes.reParent(event.target.nextSibling);
+		// Hide collapse indicator
+	}else{
+		event.target.nextSibling.childNodes.reParent(event.target.collapsedNodes);
+		// Show collapse indicator		
+	}
+}
 
 
 

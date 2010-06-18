@@ -33,6 +33,10 @@
 
 [class="tag-inline"]{
 }
+[class="tag-start"]{
+	cursor:pointer;
+}
+
 
 [class*="tag-start"], [class*="tag-end"], [class*="tag-single"] {
 	color:DarkRed;
@@ -69,7 +73,6 @@
 	display:inline;
 	padding-left:0em;
 }
-
 
 
 
