@@ -98,17 +98,15 @@ function isViewSource(targetDocument){
 //Event Handler
 function expandCollapseHandler(event){
 	event.cancelBubble = true;
-console.log(event);
+	if(event.target.getAttribute('class') != 'tag-start') return true;
+
 	if(!event.target.collapsedNodes)
 		event.target.collapsedNodes = document.createElement('div');
 	
-	if(event.target.collapsedNodes.hasChildNodes()){
+	if(event.target.collapsedNodes.hasChildNodes())
 		event.target.collapsedNodes.childNodes.reParent(event.target.nextSibling);
-		// Hide collapse indicator
-	}else{
+	else
 		event.target.nextSibling.childNodes.reParent(event.target.collapsedNodes);
-		// Show collapse indicator		
-	}
 }
 
 
@@ -119,8 +117,6 @@ console.log(event);
 
 
 if(!isViewSource(document)){
-	console.log(window);
-
 	var newRoot = document.createElement('div');
 	newRoot.setAttribute('class', 'document');
 
@@ -148,6 +144,4 @@ if(!isViewSource(document)){
 
 	//Attach the new tree
 	document.appendChild(newRoot);
-	
-	//
 }
