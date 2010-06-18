@@ -1,11 +1,13 @@
 {
-   "name": "XML Highlighter",
-   "version": "0.1",
-   "description": "Highlights XML",
-
-   "content_scripts": [ {
-      "js": [ "treeBuilder.js", "document_end.1.js" ],
-      "matches": [ "file:///*/*.xml" ],
-      "run_at": "document_end"
-    } ]
+	"name": "XML Viewer",
+	"version": "1.0.0",
+	"description": "Formats local and remote XML files for easy viewing.",
+	"icons": { "16": "icon16.png",
+			   "48": "icon48.png",
+			  "128": "icon128.png" },
+	"content_scripts": [ {
+		"js": [ "treeBuilder.js", "document_end.1.js" ],
+		"matches": [ "http:///*/*.xml", "https:///*/*.xml", "file:///*/*.xml" ],
+		"run_at": "document_end"
+	} ]
 }
