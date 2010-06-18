@@ -3,6 +3,7 @@
 	font-size:11pt;
 	padding-left:1em;
 	display:block;
+	white-space:nowrap;
 }
 
 [class="inline"]{
@@ -79,6 +80,10 @@
 	color:#CCCCFF;
 }
 
+/*[class="tag-inline"] */
+[class*="tag-start"]:before, [class*="tag-single"]:before{
+	color:#CCCCFF;
+}
 
 
 /* 
