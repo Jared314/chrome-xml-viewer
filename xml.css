@@ -18,16 +18,31 @@
 	color:black;
 	font-weight:bold;
 }
+[class="content-inline"]{
+	color:black;
+	font-weight:bold;
+	display:inline;
+	padding-left:0em;
+}
+
 
 
 /* 
  * Tags
  */
 
+[class="tag-inline"]{
+}
+
 [class*="tag-start"], [class*="tag-end"], [class*="tag-single"] {
 	color:DarkRed;
 	padding-left:0em;
 }
+
+[class="tag-inline"] [class*="tag-start"], [class="tag-inline"] [class*="tag-end"] {
+	display:inline;
+}
+
  
 [class*="tag-start"]:before, [class*="tag-single"]:before{
 	color:blue;
@@ -43,14 +58,19 @@
 	color:blue;
 	content:'>';
 }
+
 [class*="tag-single"]:after{
 	color:blue;
 	content:'/>';
 }
 
-[class*="tag-start"] [class*="content"] {
-/*	padding-left:0em;*/
+
+[class="tag-content-inline"]{
+	display:inline;
+	padding-left:0em;
 }
+
+
 
 
 /* 
@@ -58,7 +78,7 @@
  */
 
 [class*="processing-instruction"] {
-	color:gray;
+	color:blue;
 }
 
 [class*="processing-instruction"]:before {
@@ -125,6 +145,20 @@
 	padding-left:0em;
 }
 
+/*
+ * Attributes
+ */
+[class="webkit-html-comment"]{
+	color:gray;
+	display:block;
+}
+[class="webkit-html-comment"]:before {
+	color:blue;
+	content:'<!--';
+}
 
-
+[class="webkit-html-comment"]:after {
+	color:blue;
+	content:'-->';
+}
 

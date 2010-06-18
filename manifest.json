@@ -4,7 +4,7 @@
    "description": "Highlights XML",
 
    "content_scripts": [ {
-      "js": [ "document_end.1.js" ],
+      "js": [ "treeBuilder.js", "document_end.1.js" ],
       "matches": [ "file:///*/*.xml" ],
       "run_at": "document_end"
     } ]
