@@ -72,6 +72,14 @@
 }
 
 
+[class*="tag-end"]{
+	color:#E8CCCC;
+}
+[class*="tag-end"]:before, [class*="tag-end"]:after{
+	color:#CCCCFF;
+}
+
+
 
 /* 
  * Processing Instructions 
