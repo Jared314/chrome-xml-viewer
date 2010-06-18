@@ -31,12 +31,9 @@
  * Tags
  */
 
-[class="tag-inline"]{
-}
-[class="tag-start"]{
+[class="tag"] > [class="tag-start"]{
 	cursor:pointer;
 }
-
 
 [class*="tag-start"], [class*="tag-end"], [class*="tag-single"] {
 	color:DarkRed;
