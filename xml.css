@@ -134,6 +134,7 @@
 [class="webkit-html-attribute-value"]{
 	display:inline;
 	padding-left:0em;
+	color:blue;
 }
 
 [class="webkit-html-attribute-name"]:before {
@@ -146,6 +147,7 @@
  
 [class="webkit-html-attribute-value"]:before, [class="webkit-html-attribute-value"]:after {
 	content:'"';
+	color:DarkRed;
 }
 
 [class="webkit-html-attribute"]{
