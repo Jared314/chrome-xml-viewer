@@ -111,7 +111,7 @@ Document.prototype.getPlainTextXmlFileNode = function(){
 	var nodes = this.getElementsByTagName("pre").filter(
 		function(el){ return el != null && (el.innerText.match(/^\s*<\?xml\s/mi) || "").length > 0; }
 		);
-	return nodes[0];
+	return nodes;
 };
 
 

@@ -1,4 +1,4 @@
-* {
+[class*="xml-viewer-"] {
 	font-family:Courier New, serif;
 	font-size:11pt;
 	padding-left:1em;
@@ -6,7 +6,7 @@
 	white-space:nowrap;
 }
 
-[class="inline"]{
+[class="xml-viewer-inline"]{
 	display:inline;
 }
 
@@ -15,11 +15,11 @@
  * Content
  */
  
-[class="content"]{
+[class="xml-viewer-content"]{
 	color:black;
 	font-weight:bold;
 }
-[class="content-inline"]{
+[class="xml-viewer-content-inline"]{
 	color:black;
 	font-weight:bold;
 	display:inline;
@@ -32,56 +32,55 @@
  * Tags
  */
 
-[class="tag"] > [class="tag-start"]{
+[class="xml-viewer-tag"] > [class="xml-viewer-tag-start"]{
 	cursor:pointer;
 }
 
-[class*="tag-start"], [class*="tag-end"], [class*="tag-single"] {
+[class="xml-viewer-tag-start"], [class="xml-viewer-tag-end"], [class="xml-viewer-tag-single"] {
 	color:DarkRed;
 	padding-left:0em;
 }
 
-[class="tag-inline"] [class*="tag-start"], [class="tag-inline"] [class*="tag-end"] {
+[class="xml-viewer-tag-inline"] [class="xml-viewer-tag-start"], [class="xml-viewer-tag-inline"] [class="xml-viewer-tag-end"] {
 	display:inline;
 }
 
  
-[class*="tag-start"]:before, [class*="tag-single"]:before{
+[class="xml-viewer-tag-start"]:before, [class="xml-viewer-tag-single"]:before{
 	color:blue;
 	content:'<';
 }
 
-[class*="tag-end"]:before{
+[class="xml-viewer-tag-end"]:before{
 	color:blue;
 	content:'</';
 }
 
-[class*="tag-start"]:after, [class*="tag-end"]:after{
+[class="xml-viewer-tag-start"]:after, [class="xml-viewer-tag-end"]:after{
 	color:blue;
 	content:'>';
 }
 
-[class*="tag-single"]:after{
+[class="xml-viewer-tag-single"]:after{
 	color:blue;
 	content:'/>';
 }
 
 
-[class="tag-content-inline"]{
+[class="xml-viewer-tag-content-inline"]{
 	display:inline;
 	padding-left:0em;
 }
 
 
-[class*="tag-end"]{
+[class="xml-viewer-tag-end"]{
 	color:#E8CCCC;
 }
-[class*="tag-end"]:before, [class*="tag-end"]:after{
+[class="xml-viewer-tag-end"]:before, [class="xml-viewer-tag-end"]:after{
 	color:#CCCCFF;
 }
 
-/*[class="tag-inline"] */
-[class*="tag-start"]:before, [class*="tag-single"]:before{
+[class="xml-viewer-tag-start"]:before, [class="xml-viewer-tag-single"]:before{
 	color:#CCCCFF;
 }
 
@@ -90,15 +89,15 @@
  * Processing Instructions 
  */
 
-[class*="processing-instruction"] {
+[class="xml-viewer-processing-instruction"] {
 	color:blue;
 }
 
-[class*="processing-instruction"]:before {
+[class="xml-viewer-processing-instruction"]:before {
 	content:'<?';
 }
 
-[class*="processing-instruction"]:after {
+[class="xml-viewer-processing-instruction"]:after {
 	content:'?>';
 }
 
@@ -108,7 +107,7 @@
  * CData 
  */
 
-[class*="cdata"] {
+[class="xml-viewer-cdata"] {
 	color:black;
 	word-wrap: break-word; 
 	white-space: pre-wrap;
@@ -116,12 +115,12 @@
 	margin-bottom:0px;
 }
 
-[class*="cdata"]:before {
+[class="xml-viewer-cdata"]:before {
 	color:blue;
 	content:'<![CDATA[';
 }
 
-[class*="cdata"]:after {
+[class="xml-viewer-cdata"]:after {
 	color:blue;
 	content:']]>';
 }
@@ -131,35 +130,35 @@
 /*
  * Attributes
  */
-[class="webkit-html-attribute-name"]{
+[class="xml-viewer-attribute-name"]{
 	display:inline;
 	padding-left:0em;
 }
-[class="webkit-html-attribute-value"]{
+[class="xml-viewer-attribute-value"]{
 	display:inline;
 	padding-left:0em;
 	color:blue;
 }
 
-[class="webkit-html-attribute-name"]:before {
+[class="xml-viewer-attribute-name"]:before {
 	content:' ';
 }
 
-[class="webkit-html-attribute-name"]:after {
+[class="xml-viewer-attribute-name"]:after {
 	content:'=';
 }
  
-[class="webkit-html-attribute-value"]:before, [class="webkit-html-attribute-value"]:after {
+[class="xml-viewer-attribute-value"]:before, [class="xml-viewer-attribute-value"]:after {
 	content:'"';
 	color:DarkRed;
 }
 
-[class="webkit-html-attribute"]{
+[class="xml-viewer-attribute"]{
 	display:inline;
 	padding-left:0em;
 }
 
-[class="webkit-html-attribute-set"]{
+[class="xml-viewer-attribute-set"]{
 	display:inline;
 	padding-left:0em;
 }
@@ -167,7 +166,7 @@
 /*
  * Comments
  */
-[class="webkit-html-comment"]{
+[class="xml-viewer-comment"]{
 	color:gray;
 	display:block;
 	word-wrap: break-word; 
@@ -175,12 +174,12 @@
 	margin-top:0px;
 	margin-bottom:0px;	
 }
-[class="webkit-html-comment"]:before {
+[class="xml-viewer-comment"]:before {
 	color:blue;
 	content:'<!--';
 }
 
-[class="webkit-html-comment"]:after {
+[class="xml-viewer-comment"]:after {
 	color:blue;
 	content:'-->';
 }

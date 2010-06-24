@@ -2,7 +2,7 @@
 //Event Handler
 function expandCollapseHandler(event){
 	event.cancelBubble = true;
-	if(event.target.getAttribute('class') != 'tag-start') return true;
+	if(event.target.getAttribute('class') != 'xml-viewer-tag-start') return true;
 
 	if(!event.target.collapsedNodes)
 		event.target.collapsedNodes = event.target.ownerDocument.createElement('div');
@@ -21,7 +21,7 @@ function buildNodeWithAttributes(node, tagName, className, targetDocument){
 
 	if(node.hasAttributes())
 		result.appendChild(
-			node.attributes.toNode(targetDocument, 'span', 'webkit-html-attribute-name', 'webkit-html-attribute-value', 'webkit-html-attribute', 'webkit-html-attribute-set')
+			node.attributes.toNode(targetDocument, 'span', 'xml-viewer-attribute-name', 'xml-viewer-attribute-value', 'xml-viewer-attribute', 'xml-viewer-attribute-set')
 			);
 
 	return result;
@@ -38,32 +38,32 @@ function buildElementNode(node, newChildren, targetDocument){
 	//Create New wrapper node
 	var result = targetDocument.createElement('div');
 	result.setAttribute('name',node.nodeName);
-	result.setAttribute('class', 'tag');
+	result.setAttribute('class', 'xml-viewer-tag');
 
 	if(node.hasChildNodes()){
 		var contentEl = targetDocument.createElement('div');
-		contentEl.setAttribute('class','tag-content');
+		contentEl.setAttribute('class','xml-viewer-tag-content');
 
 		if(newChildren
 			&& newChildren.length > 0
-			&& newChildren.filter(function(el){ return (el && el.getAttribute('class') == 'content-inline');}).length > 0){
-			contentEl.setAttribute('class', 'tag-content-inline');
+			&& newChildren.filter(function(el){ return (el && el.getAttribute('class') == 'xml-viewer-content-inline');}).length > 0){
+			contentEl.setAttribute('class', 'xml-viewer-tag-content-inline');
 			isTagInline = true;
 		}
 		
 		newChildren.reParent(contentEl);
 
 		//Attach Nodes
-		result.appendChild(buildNodeWithAttributes(node, 'div', 'tag-start', targetDocument));
+		result.appendChild(buildNodeWithAttributes(node, 'div', 'xml-viewer-tag-start', targetDocument));
 		result.appendChild(contentEl);
-		result.appendChild(buildEndNode(node, 'div', 'tag-end', targetDocument));
+		result.appendChild(buildEndNode(node, 'div', 'xml-viewer-tag-end', targetDocument));
 	}else{
-		var s = buildNodeWithAttributes(node, 'div', 'tag-single', targetDocument);
+		var s = buildNodeWithAttributes(node, 'div', 'xml-viewer-tag-single', targetDocument);
 		result.appendChild(s);
 	}
 	
 	if(isTagInline){ 
-		result.setAttribute('class', 'tag-inline');
+		result.setAttribute('class', 'xml-viewer-tag-inline');
 	}else{ // Attach collapse handler
 		result.firstChild.addEventListener("click", expandCollapseHandler, false);
 	}
@@ -86,18 +86,18 @@ function processNode(node, targetDocument){
 			break;
 		case 3: //Text
 			if(!node.nodeValue.isWhitespace()){
-				result = node.nodeValue.toNode(targetDocument,'div', 'content');
-				if(node.nodeValue.length < 80) result.setAttribute('class', 'content-inline');
+				result = node.nodeValue.toNode(targetDocument,'div', 'xml-viewer-content');
+				if(node.nodeValue.length < 80) result.setAttribute('class', 'xml-viewer-content-inline');
 			}
 			break;
 		case 4: //CData
-			result = node.nodeValue.toNode(targetDocument, 'pre', 'cdata');
+			result = node.nodeValue.toNode(targetDocument, 'pre', 'xml-viewer-cdata');
 			break;
 		case 7: //Processing Instruction
-			result = (node.nodeName + " " + node.nodeValue).toNode(targetDocument, 'div', 'processing-instruction');
+			result = (node.nodeName + " " + node.nodeValue).toNode(targetDocument, 'div', 'xml-viewer-processing-instruction');
 			break;
 		case 8: //Comment
-			result = node.nodeValue.toNode(targetDocument, 'pre', 'webkit-html-comment');
+			result = node.nodeValue.toNode(targetDocument, 'pre', 'xml-viewer-comment');
 			break; 
 	}
 
@@ -108,14 +108,14 @@ function processNode(node, targetDocument){
 function transformXmlDocument(sDoc, dDoc){
 	//Create New Root
 	var newRoot = dDoc.createElement('div');
-	newRoot.setAttribute('class', 'document');
+	newRoot.setAttribute('class', 'xml-viewer-document');
 
 	//Add fake XML Processing Instruction
 	if(sDoc.xmlVersion){
 		var xmlStandaloneText = sDoc.xmlStandalone ? 'yes' : 'no';
 		var xmlEncodingText = sDoc.xmlEncoding ? sDoc.xmlEncoding : sDoc.inputEncoding;
 		var xmlTextNode = 'xml version="'+sDoc.xmlVersion+'" encoding="'+xmlEncodingText+'" standalone="'+xmlStandaloneText+'" ';
-		xmlTextNode = xmlTextNode.toNode(dDoc, 'div', 'processing-instruction');
+		xmlTextNode = xmlTextNode.toNode(dDoc, 'div', 'xml-viewer-processing-instruction');
 		newRoot.appendChild(xmlTextNode);
 	}
 
@@ -157,17 +157,19 @@ if( !document.isChromeViewSourcePage()){
 	}
 	else if(document.isPlainTextXmlFile())
 	{
-		var node = document.getPlainTextXmlFileNode();
+		var nodes = document.getPlainTextXmlFileNode();
 		//Transform
-		var d = node.innerText.toDOM();
-		d = transformXmlDocument(d, document);
+		for(var i=0;i<nodes.length;i++){
+			var node = nodes[i];
+			var d = node.innerText.toDOM();
+			d = transformXmlDocument(d, document);
+
+			//Attach the new tree
+			node.parentNode.replaceChild(d, node);
+		}
 
 		//Attach CSS file
 		document.insertHtmlLinkElement(chrome.extension.getURL('xml.css'));
-		document.insertHtmlLinkElement(chrome.extension.getURL('xml.html.css'));
-
-		//Attach the new tree
-		node.parentNode.replaceChild(d, node);
 	}
 	
 	//Todo: Xml files transfered as html
