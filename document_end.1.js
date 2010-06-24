@@ -150,8 +150,10 @@ if( !document.isChromeViewSourcePage()){
 		document.insertBefore(pi, document.firstChild);
 
 		//Attach the new tree
-		document.replaceChild(d, document.documentElement);
-		
+		if(document.documentElement)
+			document.replaceChild(d, document.documentElement);
+		else
+			document.appendChild(d);
 	}
 	else if(document.isPlainTextXmlFile())
 	{
@@ -159,14 +161,13 @@ if( !document.isChromeViewSourcePage()){
 		//Transform
 		var d = node.innerText.toDOM();
 		d = transformXmlDocument(d, document);
-	
+
 		//Attach CSS file
 		document.insertHtmlLinkElement(chrome.extension.getURL('xml.css'));
 		document.insertHtmlLinkElement(chrome.extension.getURL('xml.html.css'));
 
 		//Attach the new tree
 		node.parentNode.replaceChild(d, node);
-//		document.documentElement.replaceChild(d, node);
 	}
 	
 	//Todo: Xml files transfered as html
