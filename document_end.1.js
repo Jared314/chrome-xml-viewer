@@ -1,7 +1,6 @@
 
 //Event Handler
 function expandCollapseHandler(event){
-	console.log("b");
 	event.cancelBubble = true;
 	if(event.target.getAttribute('class') != 'tag-start') return true;
 
@@ -119,7 +118,6 @@ function transformXmlDocument(sDoc, dDoc){
 		xmlTextNode = xmlTextNode.toNode(dDoc, 'div', 'processing-instruction');
 		newRoot.appendChild(xmlTextNode);
 	}
-
 
 	//Transform DOM Nodes
 	var nodes = sDoc.childNodes;
