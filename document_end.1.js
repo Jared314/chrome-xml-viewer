@@ -1,7 +1,11 @@
 
 
-function buildNodeWithAttributes(node, tagName, className){
-	var result = node.nodeName.toNode(document,tagName, className);
+String.prototype.toDOM = function(){
+	return new DOMParser().parseFromString(this, "text/xml");
+};
+
+function buildNodeWithAttributes(node, tagName, className, targetDocument){
+	var result = node.nodeName.toNode(targetDocument, tagName, className);
 
 	if(node.hasAttributes())
 		result.appendChild(
@@ -11,21 +15,21 @@ function buildNodeWithAttributes(node, tagName, className){
 	return result;
 }
 
-function buildEndNode(node, tagName, className){
-	return node.nodeName.toNode(document, tagName, className);
+function buildEndNode(node, tagName, className, targetDocument){
+	return node.nodeName.toNode(targetDocument, tagName, className);
 }
 
 
-function buildElementNode(node, newChildren){
+function buildElementNode(node, newChildren, targetDocument){
 	var isTagInline = false;
 
 	//Create New wrapper node
-	var result = document.createElement('div');
+	var result = targetDocument.createElement('div');
 	result.setAttribute('name',node.nodeName);
 	result.setAttribute('class', 'tag');
 
 	if(node.hasChildNodes()){
-		var contentEl = document.createElement('div');
+		var contentEl = targetDocument.createElement('div');
 		contentEl.setAttribute('class','tag-content');
 
 		if(newChildren
@@ -38,11 +42,11 @@ function buildElementNode(node, newChildren){
 		newChildren.reParent(contentEl);
 
 		//Attach Nodes
-		result.appendChild(buildNodeWithAttributes(node, 'div', 'tag-start'));
+		result.appendChild(buildNodeWithAttributes(node, 'div', 'tag-start', targetDocument));
 		result.appendChild(contentEl);
-		result.appendChild(buildEndNode(node, 'div', 'tag-end'));
+		result.appendChild(buildEndNode(node, 'div', 'tag-end', targetDocument));
 	}else{
-		var s = buildNodeWithAttributes(node, 'div', 'tag-single');
+		var s = buildNodeWithAttributes(node, 'div', 'tag-single', targetDocument);
 		result.appendChild(s);
 	}
 	
@@ -58,39 +62,58 @@ function buildElementNode(node, newChildren){
 }
 
 
-function processNode(node){
+function processNode(node, targetDocument){
 	var children = new Array();
 	
 	for(var i=0;i<node.childNodes.length;i++)
-		children.push(processNode(node.childNodes[i]));
+		children.push(processNode(node.childNodes[i], targetDocument));
 
 	var result;
 
-	if(node.nodeType == 1) //Element
-		result = buildElementNode(node, children);
-	else if(node.nodeType == 3){ //Text
-		if(!node.nodeValue.isWhitespace()){
-			result = node.nodeValue.toNode(document,'div', 'content');
-			if(node.nodeValue.length < 80)result.setAttribute('class', 'content-inline');
-		}
-	}else if(node.nodeType == 4) //CData
-		result = node.nodeValue.toNode(document, 'pre', 'cdata');
-	else if(node.nodeType == 7) //Processing Instruction
-		result = (node.nodeName + " " + node.nodeValue).toNode(document, 'div', 'processing-instruction');
-	else if(node.nodeType == 8){ //Comment
-		result = node.nodeValue.toNode(document, 'pre', 'webkit-html-comment');
+	switch(node.nodeType){
+		case 1: //Element
+			result = buildElementNode(node, children, targetDocument);
+			break;
+		case 3: //Text
+			if(!node.nodeValue.isWhitespace()){
+				result = node.nodeValue.toNode(targetDocument,'div', 'content');
+				if(node.nodeValue.length < 80)result.setAttribute('class', 'content-inline');
+			}
+			break;
+		case 4: //CData
+			result = node.nodeValue.toNode(targetDocument, 'pre', 'cdata');
+			break;
+		case 7: //Processing Instruction
+			result = (node.nodeName + " " + node.nodeValue).toNode(targetDocument, 'div', 'processing-instruction');
+			break;
+		case 8: //Comment
+			result = node.nodeValue.toNode(targetDocument, 'pre', 'webkit-html-comment');
+			break; 
 	}
+
+	
 	return result;
 }
 
 
 
 function isViewSource(targetDocument){
-	//Only works for non-html documents
-	return targetDocument.body != null;
+	return targetDocument.body != null 
+		&& targetDocument.getElementsByClassName("webkit-line-gutter-backdrop").length == 1
+		&& targetDocument.getElementsByTagName("tbody").length == 1;
 }
 
 
+function isXmlFile(targetDocument){
+	return targetDocument.xmlVersion;
+}
+
+function isXmlLikeFile(targetDocument){
+	return targetDocument.body.childNodes.length == 1
+		&& targetDocument.body.firstChild.nodeName == "PRE"
+		&& targetDocument.body.firstChild.innerText
+		&& (targetDocument.body.firstChild.innerText.match(/^\s*<\?xml\s/mi) || "").length > 0;
+}
 
 
 
@@ -114,9 +137,8 @@ function expandCollapseHandler(event){
 
 
 
-
-
-if(!isViewSource(document)){
+//Files with xml mimetype or xml extension 
+function transformFullXmlDocument(){
 	var newRoot = document.createElement('div');
 	newRoot.setAttribute('class', 'document');
 
@@ -132,7 +154,7 @@ if(!isViewSource(document)){
 	//Transform DOM Nodes
 	var nodes = document.childNodes;
 	for(var i=0;i<nodes.length;i++){
-		var result = processNode(nodes[i]);
+		var result = processNode(nodes[i], document);
 		if(result) newRoot.appendChild(result);
 	}
 	
@@ -144,4 +166,72 @@ if(!isViewSource(document)){
 
 	//Attach the new tree
 	document.appendChild(newRoot);
+}
+
+
+
+
+function getHead(targetDocument){
+	if(targetDocument.head) return targetDocument.head;
+	return targetDocument.createElement('head');
+}
+
+
+//Text files in "raw" view but have the xml header
+function transformXmlLikeDocument(){
+	var d = document.body.firstChild.innerText.toDOM();
+
+	var newRoot = document.createElement('div');
+	newRoot.setAttribute('class', 'document');
+
+	//Add fake XML Processing Instruction
+	if(d.xmlVersion){
+		var xmlStandaloneText = d.xmlStandalone ? 'yes' : 'no';
+		var xmlEncodingText = d.xmlEncoding ? d.xmlEncoding : d.inputEncoding;
+		var xmlTextNode = 'xml version="'+d.xmlVersion+'" encoding="'+xmlEncodingText+'" standalone="'+xmlStandaloneText+'" ';
+		xmlTextNode = xmlTextNode.toNode(document, 'div', 'processing-instruction');
+		newRoot.appendChild(xmlTextNode);
+	}
+
+
+	//Transform DOM Nodes
+	var nodes = d.childNodes;
+	for(var i=0;i<nodes.length;i++){
+		var result = processNode(nodes[i], d);
+		if(result){
+			result = document.importNode(result, true);
+			newRoot.appendChild(result);
+		}
+	}
+
+	
+	//Attach CSS file
+	var cssPath = chrome.extension.getURL('xml.css');
+	var head = getHead(document);
+	var link = document.createElement('link');
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	link.href = cssPath;
+	head.appendChild(link);
+	var html = document.getElementsByTagName("html")[0];
+	html.insertBefore(head, html.firstChild);
+
+	//Attach the new tree
+	document.body.replaceChild(newRoot, document.body.firstChild);
+}
+
+//Todo: Xml files transfered as html
+
+
+
+
+
+
+
+
+if( !isViewSource(document)){
+	if(isXmlFile(document))
+		transformFullXmlDocument();
+	else if(isXmlLikeFile(document))
+		transformXmlLikeDocument();
 }
