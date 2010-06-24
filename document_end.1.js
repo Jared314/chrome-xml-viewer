@@ -109,7 +109,8 @@ function isXmlFile(targetDocument){
 }
 
 function isXmlLikeFile(targetDocument){
-	return targetDocument.body.childNodes.length == 1
+	return targetDocument.body 
+		&& targetDocument.body.childNodes.length == 1
 		&& targetDocument.body.firstChild.nodeName == "PRE"
 		&& targetDocument.body.firstChild.innerText
 		&& (targetDocument.body.firstChild.innerText.match(/^\s*<\?xml\s/mi) || "").length > 0;
@@ -176,6 +177,14 @@ function getHead(targetDocument){
 	return targetDocument.createElement('head');
 }
 
+function createLink(targetDocument, path){
+	var link = targetDocument.createElement('link');
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	link.href = path;
+	return link;
+}
+
 
 //Text files in "raw" view but have the xml header
 function transformXmlLikeDocument(){
@@ -207,18 +216,17 @@ function transformXmlLikeDocument(){
 	
 	//Attach CSS file
 	var cssPath = chrome.extension.getURL('xml.css');
+	var htmlCssPath = chrome.extension.getURL('xml.html.css');
 	var head = getHead(document);
-	var link = document.createElement('link');
-	link.type = "text/css";
-	link.rel = "stylesheet";
-	link.href = cssPath;
-	head.appendChild(link);
+	head.appendChild(createLink(document, cssPath));
+	head.appendChild(createLink(document, htmlCssPath));	
 	var html = document.getElementsByTagName("html")[0];
 	html.insertBefore(head, html.firstChild);
 
 	//Attach the new tree
 	document.body.replaceChild(newRoot, document.body.firstChild);
 }
+
 
 //Todo: Xml files transfered as html
 
