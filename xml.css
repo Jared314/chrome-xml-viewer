@@ -110,6 +110,8 @@
 
 [class*="cdata"] {
 	color:black;
+	word-wrap: break-word; 
+	white-space: pre-wrap;
 }
 
 [class*="cdata"]:before {
@@ -161,11 +163,13 @@
 }
 
 /*
- * Attributes
+ * Comments
  */
 [class="webkit-html-comment"]{
 	color:gray;
 	display:block;
+	word-wrap: break-word; 
+	white-space: pre-wrap;
 }
 [class="webkit-html-comment"]:before {
 	color:blue;
