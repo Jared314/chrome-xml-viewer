@@ -62,7 +62,7 @@ function buildElementNode(node, newChildren, targetDocument){
 		var s = buildNodeWithAttributes(node, 'div', 'xml-viewer-tag-single', targetDocument);
 		result.appendChild(s);
 	}
-	
+
 	if(isTagInline){ 
 		result.setAttribute('class', 'xml-viewer-tag-inline');
 	}else{ // Attach collapse handler

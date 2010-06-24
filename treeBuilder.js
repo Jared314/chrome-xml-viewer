@@ -2,7 +2,8 @@
 (function(){
 
 String.prototype.isWhitespace = function(){
-	return this.replace(/[\r\n]+/g, '').length < 1;
+	//TODO: \W removes cyrillic characters
+	return this.replace(/[\r\n\W]+/g, '').length < 1;
 };
 
 String.prototype.toNode = function(targetDocument, tagName, className){
@@ -100,10 +101,16 @@ Document.prototype.isXmlFile = function(){
 	return this.xmlVersion != null;
 };
 
+Node.prototype.hasElementChildNodes = function(){
+	if(!this.hasChildNodes()) return false;
+	return this.childNodes.filter(function(el){ return el.nodeType == 1; }).length > 0;
+};
+
+
 Document.prototype.isPlainTextXmlFile = function(){
 	return this.body 
 		&& this.getElementsByTagName("pre").filter(
-			function(el){ return el != null && (el.innerText.match(/^\s*<\?xml\s/mi) || "").length > 0; }
+			function(el){ return el != null && !el.hasElementChildNodes() && (el.innerText.match(/^\s*<\?xml\s/mi) || "").length > 0; }
 			).length > 0;
 };
 
