@@ -2,7 +2,7 @@
 (function(){
 
 String.prototype.isWhitespace = function(){
-	return this.replace(/[\r\n\W]+/g, '').length < 1;
+	return this.replace(/[\r\n]+/g, '').length < 1;
 };
 
 String.prototype.toNode = function(targetDocument, tagName, className){
