@@ -48,6 +48,15 @@ NodeList.prototype.reParent = function(newParent){
 		}
 }
 
+NodeList.prototype.filter = function(callback){
+	var l = this.length;
+	var result = [];
+	for(var i=0;i<l;i++)
+		if(callback(this.item(i)))
+			result.push(this.item(i));
+	return result;
+};
+
 NamedNodeMap.prototype.toNode = function(targetDocument, tagName, nameClassName, valueClassName, attributeClassName, groupClassName){
 	var result = targetDocument.createElement(tagName);
 	if(groupClassName) result.setAttribute('class', groupClassName);
@@ -93,10 +102,16 @@ Document.prototype.isXmlFile = function(){
 
 Document.prototype.isPlainTextXmlFile = function(){
 	return this.body 
-		&& this.body.childNodes.length == 1
-		&& this.body.firstChild.nodeName == "PRE"
-		&& this.body.firstChild.innerText
-		&& (this.body.firstChild.innerText.match(/^\s*<\?xml\s/mi) || "").length > 0;
+		&& this.getElementsByTagName("pre").filter(
+			function(el){ return el != null && (el.innerText.match(/^\s*<\?xml\s/mi) || "").length > 0; }
+			).length > 0;
+};
+
+Document.prototype.getPlainTextXmlFileNode = function(){
+	var nodes = this.getElementsByTagName("pre").filter(
+		function(el){ return el != null && (el.innerText.match(/^\s*<\?xml\s/mi) || "").length > 0; }
+		);
+	return nodes[0];
 };
 
 

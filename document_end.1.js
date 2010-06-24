@@ -155,8 +155,9 @@ if( !document.isChromeViewSourcePage()){
 	}
 	else if(document.isPlainTextXmlFile())
 	{
+		var node = document.getPlainTextXmlFileNode();
 		//Transform
-		var d = document.body.firstChild.innerText.toDOM();
+		var d = node.innerText.toDOM();
 		d = transformXmlDocument(d, document);
 	
 		//Attach CSS file
@@ -164,7 +165,8 @@ if( !document.isChromeViewSourcePage()){
 		document.insertHtmlLinkElement(chrome.extension.getURL('xml.html.css'));
 
 		//Attach the new tree
-		document.body.replaceChild(d, document.body.firstChild);
+		node.parentNode.replaceChild(d, node);
+//		document.documentElement.replaceChild(d, node);
 	}
 	
 	//Todo: Xml files transfered as html
