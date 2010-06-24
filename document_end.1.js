@@ -46,11 +46,12 @@ function buildElementNode(node, newChildren, targetDocument){
 
 		if(newChildren
 			&& newChildren.length > 0
-			&& newChildren.filter(function(el){ return (el && el.getAttribute('class') == 'xml-viewer-content-inline');}).length > 0){
+			&& newChildren.filter(function(el){ return (el && el.getAttribute('class') == 'xml-viewer-content-inline');}).length > 0)
+		{
 			contentEl.setAttribute('class', 'xml-viewer-tag-content-inline');
 			isTagInline = true;
 		}
-		
+
 		newChildren.reParent(contentEl);
 
 		//Attach Nodes
