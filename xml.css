@@ -32,7 +32,7 @@
  * Tags
  */
 
-[class="xml-viewer-tag-start"]{
+[class="xml-viewer-tag"] > [class="xml-viewer-tag-start"]{
 	cursor:pointer;
 }
 
