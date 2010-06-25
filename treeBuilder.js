@@ -2,8 +2,25 @@
 
 
 String.prototype.isWhitespace = function(){
-	//TODO: \W removes cyrillic characters
-	return this.replace(/[\r\n\W]+/g, '').length < 1;
+	//\u000a
+	//\u0009
+	//\u000b
+	//\u000c
+	//\u000d
+	//\u0020
+	//\u00a0
+	//\u0085
+	//\u1680
+	//\u2007
+	//\u2008
+	//\u2009
+	//\u200a
+	//\u2028
+	//\u2029
+	//\u202f
+	//\u205f
+	//\u3000
+	return this.replace(/[\u000a\u0009\u000b\u000c\u000d\u0020\u00a0\u0085\u1680\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000]+/g, '').length < 1;
 };
 
 String.prototype.toNode = function(targetDocument, tagName, className){
@@ -94,7 +111,7 @@ Document.prototype.isChromeViewSourcePage = function(){
 };
 
 Document.prototype.isXmlFile = function(){
-	return this.xmlVersion != null;
+	return this.xmlVersion != null && this.getElementsByTagName("div").length < 1 && this.getElementsByTagName("table").length < 1;
 };
 
 Node.prototype.hasElementChildNodes = function(){
