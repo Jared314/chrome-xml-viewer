@@ -76,8 +76,13 @@ function buildElementNode(node, newChildren, targetDocument){
 function processNode(node, targetDocument){
 	var children = new Array();
 	
-	for(var i=0;i<node.childNodes.length;i++)
-		children.push(processNode(node.childNodes[i], targetDocument));
+	if(node.hasChildNodes()){
+		var child = node.firstChild;
+		while(child){
+			children.push(processNode(child, targetDocument));
+			child = child.nextSibling;
+		}
+	}
 
 	var result;
 	
@@ -121,14 +126,15 @@ function transformXmlDocument(sDoc, dDoc){
 	}
 
 	//Transform DOM Nodes
-	var nodes = sDoc.childNodes;
-	for(var i=0;i<nodes.length;i++){
-		var result = processNode(nodes[i], dDoc);
+	var node = sDoc.firstChild;
+	while(node){
+		var result = processNode(node, dDoc);
 		if(result){
 			newRoot.appendChild(result);
 		}
+		node = node.nextSibling;
 	}
-
+	
 	return newRoot;
 }
 

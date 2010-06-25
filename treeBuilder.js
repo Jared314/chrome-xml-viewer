@@ -1,5 +1,5 @@
 
-(function(){
+
 
 String.prototype.isWhitespace = function(){
 	//TODO: \W removes cyrillic characters
@@ -8,7 +8,12 @@ String.prototype.isWhitespace = function(){
 
 String.prototype.toNode = function(targetDocument, tagName, className){
 	var result = targetDocument.createTextNode(this);
-	if(tagName) result = result.wrap(tagName, className);
+	if(tagName){
+		var s = targetDocument.createElement(tagName);
+		if(className) s.setAttribute('class', className);
+		s.appendChild(result);
+		result = s;
+	}
 	return result;
 };
 
@@ -25,15 +30,6 @@ Array.prototype.reParent = function(newParent){
 			}
 			newParent.appendChild(el);
 		}
-};
-
-Node.prototype.wrap = function(tagName, className){
-	var s = this.ownerDocument.createElement(tagName);
-	if(className) s.setAttribute('class', className);
-	var p = this.parentNode;
-	s.appendChild(this);
-	if(p != null) p.appendChild(s);
-	return s;
 };
 
 NodeList.prototype.reParent = function(newParent){
@@ -106,7 +102,6 @@ Node.prototype.hasElementChildNodes = function(){
 	return this.childNodes.filter(function(el){ return el.nodeType == 1; }).length > 0;
 };
 
-
 Document.prototype.isPlainTextXmlFile = function(){
 	return this.body 
 		&& this.getElementsByTagName("pre").filter(
@@ -124,4 +119,4 @@ Document.prototype.getPlainTextXmlFileNode = function(){
 
 
 
-})();
+
