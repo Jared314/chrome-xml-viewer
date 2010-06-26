@@ -39,7 +39,6 @@
  
 [class~="xml-viewer-tag-content"]{
 	color:black;
-	font-weight:bold;
 }
 
 
@@ -47,7 +46,6 @@
 /* 
  * Tags
  */
-
 [class~="xml-viewer-tag"]:not([class~="xml-viewer-inline"]) > [class~="xml-viewer-tag-start"]:not([class~="xml-viewer-tag-end"]){
 	cursor:pointer;
 }
@@ -57,33 +55,32 @@
 	padding-left:0em;
 }
 
-[class~="xml-viewer-tag-end"]:before{
-	content:'</';
+[class~="xml-viewer-tag-end"]:not([class~="xml-viewer-tag-start"]):before{
+	content:'<';
 }
 
-[class~="xml-viewer-tag-start"]:after, [class~="xml-viewer-tag-end"]:after{
+[class~="xml-viewer-tag-start"]:after{/*, [class~="xml-viewer-tag-end"]:after{*/
 	color:blue;
 	content:'>';
 }
 
 [class~="xml-viewer-tag-start"][class~="xml-viewer-tag-end"]:after{
 	color:blue;
-	content:'/>';
+	content:'/';
 }
+
 
 /* Tag Fade Effect */
 [class~="xml-viewer-tag-start"]:before{
 	color:#CCCCFF;
-	content:'<';
 }
 
 [class~="xml-viewer-tag-end"]:not([class~="xml-viewer-tag-start"]){
 	color:#E8CCCC;
+
 }
 [class~="xml-viewer-tag-end"]:before, [class="xml-viewer-tag-end"]:after{
 	color:#CCCCFF;
-}
-[class~="xml-viewer-tag-end"]:before{
 }
 
 
