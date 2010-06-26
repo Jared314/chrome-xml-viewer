@@ -74,7 +74,7 @@ function buildElementNode(node, newChildren, targetDocument){
 
 function processNode(node, targetDocument){
 	var children = new Array();
-	
+
 	if(node.hasChildNodes()){
 		var child = node.firstChild;
 		while(child){
@@ -86,32 +86,37 @@ function processNode(node, targetDocument){
 	var result;
 	
 	switch(node.nodeType){
-		case 1: //Element
+		case Node.ELEMENT_NODE:
 			result = buildElementNode(node, children, targetDocument);
 			break;
-		case 3: //Text
+		case Node.TEXT_NODE:
 			if(!node.nodeValue.isWhitespace())
 				result = (targetDocument != node.ownerDocument) ? targetDocument.importNode(node, false) : node;
 			break;
-		case 4: //CData
+		case Node.CDATA_SECTION_NODE:
 			result = node.nodeValue.toNode(targetDocument, 'pre', 'xml-viewer-cdata');
 			break;
-		case 7: //Processing Instruction
+		case Node.PROCESSING_INSTRUCTION_NODE:
 			result = (node.nodeName + " " + node.nodeValue).toNode(targetDocument, 'div', 'xml-viewer-processing-instruction');
 			break;
-		case 8: //Comment
+		case Node.COMMENT_NODE:
 			result = node.nodeValue.toNode(targetDocument, 'pre', 'xml-viewer-comment');
-			break; 
+			break;
+		case Node.DOCUMENT_NODE:
+			result = targetDocument.createElement('div');
+			result.setAttribute('class', 'xml-viewer-document');
+			children.reParent(result);
+			break;
 	}
-
+	
 	return result;
 }
 
 //Transformation
 function transformXmlDocument(sDoc, dDoc){
-	//Create New Root
-	var newRoot = dDoc.createElement('div');
-	newRoot.setAttribute('class', 'xml-viewer-document');
+
+	//Transform DOM Nodes
+	var newRoot = processNode(sDoc, dDoc);
 
 	//Add fake XML Processing Instruction
 	if(sDoc.xmlVersion){
@@ -119,19 +124,9 @@ function transformXmlDocument(sDoc, dDoc){
 		var xmlEncodingText = sDoc.xmlEncoding ? sDoc.xmlEncoding : sDoc.inputEncoding;
 		var xmlTextNode = 'xml version="'+sDoc.xmlVersion+'" encoding="'+xmlEncodingText+'" standalone="'+xmlStandaloneText+'" ';
 		xmlTextNode = xmlTextNode.toNode(dDoc, 'div', 'xml-viewer-processing-instruction');
-		newRoot.appendChild(xmlTextNode);
+		newRoot.insertBefore(xmlTextNode, newRoot.firstChild);
 	}
 
-	//Transform DOM Nodes
-	var node = sDoc.firstChild;
-	while(node){
-		var result = processNode(node, dDoc);
-		if(result){
-			newRoot.appendChild(result);
-		}
-		node = node.nextSibling;
-	}
-	
 	return newRoot;
 }
 
