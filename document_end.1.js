@@ -1,18 +1,18 @@
 
 //Event Handler
-function expandCollapseHandler(event){
+function foldingHandler(event){
 	event.cancelBubble = true;
-	if(event.target.getAttribute('class') != 'xml-viewer-tag-start') return true;
+	if(event.target.parentNode.getAttribute('class') != 'xml-viewer-tag-start') return true;
 
 	var hiddenCssClass = 'xml-viewer-hidden';
 	var hiddenRegex = new RegExp('\\s?\\b' + hiddenCssClass + '\\b', 'i');
-	var contentNode = event.target.nextSibling;
+	var contentNode = event.target.parentNode.nextSibling;
 	var c = contentNode.getAttribute('class');
 
 	if(c.search(hiddenRegex) > -1) //Hidden
 		c = c.replace(hiddenRegex, '');
 	else
-		c = c + ' ' + hiddenCssClass;
+		c += ' ' + hiddenCssClass;
 
 	contentNode.setAttribute('class', c);
 }
@@ -21,7 +21,10 @@ function expandCollapseHandler(event){
 //Node Rendering
 
 function buildNodeWithAttributes(node, tagName, className, targetDocument){
-	var result = node.nodeName.toNode(targetDocument, tagName, className);
+	var result = targetDocument.createElement(tagName);
+	result.setAttribute('class', className);
+	
+	result.appendChild(node.nodeName.toNode(targetDocument, 'span'));
 
 	if(node.hasAttributes())
 		result.appendChild(
@@ -38,35 +41,34 @@ function buildEndNode(node, tagName, className, targetDocument){
 
 function buildElementNode(node, newChildren, targetDocument){
 
-	//Create New wrapper node
+	var hasChildren = newChildren && newChildren.length > 0;
+	var isTagInline = newChildren && newChildren.length == 1 
+			&& newChildren[0].nodeType == Node.TEXT_NODE
+			&& newChildren[0].nodeValue.length < 80;
+
+	//Create new wrapper node
 	var result = targetDocument.createElement('div');
 	result.setAttribute('name',node.nodeName);
-	result.setAttribute('class', 'xml-viewer-tag');
+	result.setAttribute('class', isTagInline ? 'xml-viewer-tag xml-viewer-inline' : 'xml-viewer-tag');
 
-	if(node.hasChildNodes()){
+	//Create tags
+	var startTagStyle =  hasChildren ? 'xml-viewer-tag-start' : 'xml-viewer-tag-start xml-viewer-tag-end';
+	result.appendChild(buildNodeWithAttributes(node, 'div', startTagStyle, targetDocument));
+
+	if(hasChildren){
 		var contentEl = targetDocument.createElement('div');
 		contentEl.setAttribute('class','xml-viewer-tag-content');
 
 		newChildren.reParent(contentEl);
 
-		//Attach Nodes
-		result.appendChild(buildNodeWithAttributes(node, 'div', 'xml-viewer-tag-start', targetDocument));
+		//Attach nodes
 		result.appendChild(contentEl);
 		result.appendChild(buildEndNode(node, 'div', 'xml-viewer-tag-end', targetDocument));
-	}else{
-		var s = buildNodeWithAttributes(node, 'div', 'xml-viewer-tag-start xml-viewer-tag-end', targetDocument);
-		result.appendChild(s);
 	}
 
-	var isTagInline = (newChildren && newChildren.length == 1 
-			&& newChildren[0].nodeType == 3 //Text Node
-			&& newChildren[0].nodeValue.length < 80);
-			
-	if(isTagInline){ 
-		result.setAttribute('class', 'xml-viewer-tag xml-viewer-inline');
-	}else{ // Attach collapse handler
-		result.firstChild.addEventListener("click", expandCollapseHandler, false);
-	}
+	// Attach folding handler
+	if(!isTagInline)
+		result.firstChild.firstChild.addEventListener("click", foldingHandler, false);
 	
 	return result;
 }

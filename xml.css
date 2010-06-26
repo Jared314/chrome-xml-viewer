@@ -46,7 +46,7 @@
 /* 
  * Tags
  */
-[class~="xml-viewer-tag"]:not([class~="xml-viewer-inline"]) > [class~="xml-viewer-tag-start"]:not([class~="xml-viewer-tag-end"]){
+[class~="xml-viewer-tag"]:not([class~="xml-viewer-inline"]) > [class~="xml-viewer-tag-start"]:not([class~="xml-viewer-tag-end"]) > span{
 	cursor:pointer;
 }
 
