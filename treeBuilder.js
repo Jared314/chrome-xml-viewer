@@ -49,19 +49,6 @@ Array.prototype.reParent = function(newParent){
 		}
 };
 
-NodeList.prototype.reParent = function(newParent){
-	//Treats a NodeList like a stack and pops off the first node every time.
-	var l = this.length;
-	for(var i=0;i<l;i++)
-		if(this.item(0)){
-			var el = this.item(0);
-			if(newParent.ownerDocument != el.ownerDocument){
-				el = newParent.ownerDocument.importNode(el, true);
-			}
-			newParent.appendChild(el);
-		}
-}
-
 NodeList.prototype.filter = function(callback){
 	var l = this.length;
 	var result = [];
