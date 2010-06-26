@@ -126,12 +126,15 @@ Document.prototype.getPlainTextXmlFileNode = function(){
 
 //Event Handler
 function foldingHandler(event){
-	event.cancelBubble = true;
-	if(event.target.parentNode.getAttribute('class') != 'xml-viewer-tag-start') return true;
+	event.cancelBubble = true;	
+
+	var t = event.target;
+	while(t.getAttribute('class') != 'xml-viewer-tag-start')
+		t = t.parentNode;
 
 	var hiddenCssClass = 'xml-viewer-hidden';
 	var hiddenRegex = new RegExp('\\s?\\b' + hiddenCssClass + '\\b', 'i');
-	var contentNode = event.target.parentNode.nextSibling;
+	var contentNode = t.nextSibling;
 	var c = contentNode.getAttribute('class');
 
 	if(c.search(hiddenRegex) > -1) //Hidden
@@ -148,13 +151,13 @@ function buildNodeWithAttributes(node, tagName, className, targetDocument){
 	var result = targetDocument.createElement(tagName);
 	result.setAttribute('class', className);
 	
-	result.appendChild(node.nodeName.toNode(targetDocument, 'span'));
+	var tag = node.nodeName.toNode(targetDocument, 'span');
 
 	if(node.hasAttributes())
-		result.appendChild(
+		tag.appendChild(
 			node.attributes.toNode(targetDocument, 'span', 'xml-viewer-attribute-name', 'xml-viewer-attribute-value', 'xml-viewer-attribute', 'xml-viewer-attribute-set')
 			);
-
+	result.appendChild(tag);
 	return result;
 }
 

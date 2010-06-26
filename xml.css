@@ -126,6 +126,7 @@
  * Attributes
  */
 [class~="xml-viewer-attribute-set"], [class~="xml-viewer-attribute-set"] [class|="xml-viewer-attribute"] {
+	cursor:inherit;
 	display:inline;
 	padding-left:0em;
 }
