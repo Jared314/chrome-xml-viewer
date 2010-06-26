@@ -91,7 +91,7 @@ function processNode(node, targetDocument){
 			break;
 		case Node.TEXT_NODE:
 			if(!node.nodeValue.isWhitespace())
-				result = (targetDocument != node.ownerDocument) ? targetDocument.importNode(node, false) : node;
+				result = (targetDocument != node.ownerDocument) ? targetDocument.importNode(node, false) : node.cloneNode(false);
 			break;
 		case Node.CDATA_SECTION_NODE:
 			result = node.nodeValue.toNode(targetDocument, 'pre', 'xml-viewer-cdata');
