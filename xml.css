@@ -59,15 +59,11 @@
 	content:'<';
 }
 
-[class~="xml-viewer-tag-start"]:after{/*, [class~="xml-viewer-tag-end"]:after{*/
+[class~="xml-viewer-tag-start"]:not([class~="xml-viewer-tag-end"]):after{
 	color:blue;
 	content:'>';
 }
 
-[class~="xml-viewer-tag-start"][class~="xml-viewer-tag-end"]:after{
-	color:blue;
-	content:'/';
-}
 
 
 /* Tag Fade Effect */
