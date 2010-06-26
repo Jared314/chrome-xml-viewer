@@ -90,9 +90,8 @@ function processNode(node, targetDocument){
 			result = buildElementNode(node, children, targetDocument);
 			break;
 		case 3: //Text
-			if(!node.nodeValue.isWhitespace()){
-				result = node.nodeValue.toNode(targetDocument);//,'div', 'xml-viewer-content');
-			}
+			if(!node.nodeValue.isWhitespace())
+				result = node.nodeValue.toNode(targetDocument);
 			break;
 		case 4: //CData
 			result = node.nodeValue.toNode(targetDocument, 'pre', 'xml-viewer-cdata');
