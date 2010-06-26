@@ -1,4 +1,4 @@
-[class*="xml-viewer-"] {
+[class|="xml-viewer"] {
 	margin: 0;
 	padding: 0;
 	border: 0;
@@ -12,7 +12,8 @@
 	text-align: left;
 	font-weight: normal;
 	background-color:white;	
-	
+	cursor:default;
+
 	font-family: Menlo, Consolas, Courier New, Lucida Console, serif;
 	font-size:11pt;
 	padding-left:1em;
@@ -21,8 +22,16 @@
 	
 }
 
-[class="xml-viewer-inline"]{
+[class~="xml-viewer-inline"] > [class|="xml-viewer-tag"]{
 	display:inline;
+	padding-left:0;
+}
+
+[class~="xml-viewer-hidden"]{
+	display:none;
+}
+[class~="xml-viewer-hidden"]:before{
+	content:"...";
 }
 
 
@@ -30,15 +39,9 @@
  * Content
  */
  
-[class="xml-viewer-content"]{
+[class~="xml-viewer-tag-content"]{
 	color:black;
 	font-weight:bold;
-}
-[class="xml-viewer-content-inline"]{
-	color:black;
-	font-weight:bold;
-	display:inline;
-	padding-left:0em;
 }
 
 
@@ -47,60 +50,42 @@
  * Tags
  */
 
-[class="xml-viewer-tag"] > [class="xml-viewer-tag-start"]{
+[class~="xml-viewer-tag"]:not([class~="xml-viewer-inline"]) > [class~="xml-viewer-tag-start"]:not([class~="xml-viewer-tag-end"]){
 	cursor:pointer;
 }
 
-[class="xml-viewer-tag-start"] *{
-	cursor:default;
-}
-
-[class="xml-viewer-tag-start"], [class="xml-viewer-tag-end"], [class="xml-viewer-tag-single"] {
+[class~="xml-viewer-tag-start"], [class~="xml-viewer-tag-end"] {
 	color:DarkRed;
 	padding-left:0em;
 }
 
-[class="xml-viewer-tag-inline"] [class="xml-viewer-tag-start"], [class="xml-viewer-tag-inline"] [class="xml-viewer-tag-end"] {
-	display:inline;
-}
-
- 
-[class="xml-viewer-tag-start"]:before, [class="xml-viewer-tag-single"]:before{
-	color:blue;
-	content:'<';
-}
-
-[class="xml-viewer-tag-end"]:before{
-	color:blue;
+[class~="xml-viewer-tag-end"]:before{
 	content:'</';
 }
 
-[class="xml-viewer-tag-start"]:after, [class="xml-viewer-tag-end"]:after{
+[class~="xml-viewer-tag-start"]:after, [class~="xml-viewer-tag-end"]:after{
 	color:blue;
 	content:'>';
 }
 
-[class="xml-viewer-tag-single"]:after{
+[class~="xml-viewer-tag-start"][class~="xml-viewer-tag-end"]:after{
 	color:blue;
 	content:'/>';
 }
 
-
-[class="xml-viewer-tag-content-inline"]{
-	display:inline;
-	padding-left:0em;
+/* Tag Fade Effect */
+[class~="xml-viewer-tag-start"]:before{
+	color:#CCCCFF;
+	content:'<';
 }
 
-
-[class="xml-viewer-tag-end"]{
+[class~="xml-viewer-tag-end"]:not([class~="xml-viewer-tag-start"]){
 	color:#E8CCCC;
 }
-[class="xml-viewer-tag-end"]:before, [class="xml-viewer-tag-end"]:after{
+[class~="xml-viewer-tag-end"]:before, [class="xml-viewer-tag-end"]:after{
 	color:#CCCCFF;
 }
-
-[class="xml-viewer-tag-start"]:before, [class="xml-viewer-tag-single"]:before{
-	color:#CCCCFF;
+[class~="xml-viewer-tag-end"]:before{
 }
 
 
@@ -108,15 +93,15 @@
  * Processing Instructions 
  */
 
-[class="xml-viewer-processing-instruction"] {
+[class~="xml-viewer-processing-instruction"] {
 	color:blue;
 }
 
-[class="xml-viewer-processing-instruction"]:before {
+[class~="xml-viewer-processing-instruction"]:before {
 	content:'<?';
 }
 
-[class="xml-viewer-processing-instruction"]:after {
+[class~="xml-viewer-processing-instruction"]:after {
 	content:'?>';
 }
 
@@ -126,7 +111,7 @@
  * CData 
  */
 
-[class="xml-viewer-cdata"] {
+[class~="xml-viewer-cdata"] {
 	color:black;
 	word-wrap: break-word; 
 	white-space: pre-wrap;
@@ -134,12 +119,12 @@
 	margin-bottom:0px;
 }
 
-[class="xml-viewer-cdata"]:before {
+[class~="xml-viewer-cdata"]:before {
 	color:blue;
 	content:'<![CDATA[';
 }
 
-[class="xml-viewer-cdata"]:after {
+[class~="xml-viewer-cdata"]:after {
 	color:blue;
 	content:']]>';
 }
@@ -149,43 +134,33 @@
 /*
  * Attributes
  */
-[class="xml-viewer-attribute-name"]{
+[class~="xml-viewer-attribute-set"], [class~="xml-viewer-attribute-set"] [class|="xml-viewer-attribute"] {
 	display:inline;
 	padding-left:0em;
 }
-[class="xml-viewer-attribute-value"]{
-	display:inline;
-	padding-left:0em;
+
+[class~="xml-viewer-attribute-value"]{
 	color:blue;
 }
 
-[class="xml-viewer-attribute-name"]:before {
+[class~="xml-viewer-attribute-name"]:before {
 	content:' ';
 }
 
-[class="xml-viewer-attribute-name"]:after {
+[class~="xml-viewer-attribute-name"]:after {
 	content:'=';
 }
  
-[class="xml-viewer-attribute-value"]:before, [class="xml-viewer-attribute-value"]:after {
-	content:'"';
+[class~="xml-viewer-attribute-value"]:before, [class~="xml-viewer-attribute-value"]:after {
 	color:DarkRed;
+	content:'"';
 }
 
-[class="xml-viewer-attribute"]{
-	display:inline;
-	padding-left:0em;
-}
-
-[class="xml-viewer-attribute-set"]{
-	display:inline;
-	padding-left:0em;
-}
 
 /*
  * Comments
  */
-[class="xml-viewer-comment"]{
+[class~="xml-viewer-comment"]{
 	color:gray;
 	display:block;
 	word-wrap: break-word; 
@@ -193,12 +168,12 @@
 	margin-top:0px;
 	margin-bottom:0px;	
 }
-[class="xml-viewer-comment"]:before {
+[class~="xml-viewer-comment"]:before {
 	color:blue;
 	content:'<!--';
 }
 
-[class="xml-viewer-comment"]:after {
+[class~="xml-viewer-comment"]:after {
 	color:blue;
 	content:'-->';
 }

@@ -4,13 +4,17 @@ function expandCollapseHandler(event){
 	event.cancelBubble = true;
 	if(event.target.getAttribute('class') != 'xml-viewer-tag-start') return true;
 
-	if(!event.target.collapsedNodes)
-		event.target.collapsedNodes = event.target.ownerDocument.createElement('div');
+	var hiddenCssClass = 'xml-viewer-hidden';
+	var hiddenRegex = new RegExp('\b' + hiddenCssClass + '\b', 'i');
+	var contentNode = event.target.nextSibling;
+	var c = contentNode.getAttribute('class')
 	
-	if(event.target.collapsedNodes.hasChildNodes())
-		event.target.collapsedNodes.childNodes.reParent(event.target.nextSibling);
+	if(c.search(hiddenRegex) > -1) //Hidden
+		c = c.replace(hiddenRegex, '');
 	else
-		event.target.nextSibling.childNodes.reParent(event.target.collapsedNodes);
+		c = c + ' ' + hiddenCssClass;
+		
+	contentNode.setAttribute('class', c);
 }
 
 
@@ -33,7 +37,6 @@ function buildEndNode(node, tagName, className, targetDocument){
 
 
 function buildElementNode(node, newChildren, targetDocument){
-	var isTagInline = false;
 
 	//Create New wrapper node
 	var result = targetDocument.createElement('div');
@@ -44,14 +47,6 @@ function buildElementNode(node, newChildren, targetDocument){
 		var contentEl = targetDocument.createElement('div');
 		contentEl.setAttribute('class','xml-viewer-tag-content');
 
-		if(newChildren
-			&& newChildren.length > 0
-			&& newChildren.filter(function(el){ return (el && el.getAttribute('class') == 'xml-viewer-content-inline');}).length > 0)
-		{
-			contentEl.setAttribute('class', 'xml-viewer-tag-content-inline');
-			isTagInline = true;
-		}
-
 		newChildren.reParent(contentEl);
 
 		//Attach Nodes
@@ -59,12 +54,16 @@ function buildElementNode(node, newChildren, targetDocument){
 		result.appendChild(contentEl);
 		result.appendChild(buildEndNode(node, 'div', 'xml-viewer-tag-end', targetDocument));
 	}else{
-		var s = buildNodeWithAttributes(node, 'div', 'xml-viewer-tag-single', targetDocument);
+		var s = buildNodeWithAttributes(node, 'div', 'xml-viewer-tag-start xml-viewer-tag-end', targetDocument);
 		result.appendChild(s);
 	}
 
+	var isTagInline = (newChildren && newChildren.length == 1 
+			&& newChildren[0].nodeType == 3 //Text Node
+			&& newChildren[0].nodeValue.length < 80);
+			
 	if(isTagInline){ 
-		result.setAttribute('class', 'xml-viewer-tag-inline');
+		result.setAttribute('class', 'xml-viewer-tag xml-viewer-inline');
 	}else{ // Attach collapse handler
 		result.firstChild.addEventListener("click", expandCollapseHandler, false);
 	}
@@ -92,8 +91,7 @@ function processNode(node, targetDocument){
 			break;
 		case 3: //Text
 			if(!node.nodeValue.isWhitespace()){
-				result = node.nodeValue.toNode(targetDocument,'div', 'xml-viewer-content');
-				if(node.nodeValue.length < 80) result.setAttribute('class', 'xml-viewer-content-inline');
+				result = node.nodeValue.toNode(targetDocument);//,'div', 'xml-viewer-content');
 			}
 			break;
 		case 4: //CData
