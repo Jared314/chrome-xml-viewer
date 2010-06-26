@@ -5,15 +5,15 @@ function expandCollapseHandler(event){
 	if(event.target.getAttribute('class') != 'xml-viewer-tag-start') return true;
 
 	var hiddenCssClass = 'xml-viewer-hidden';
-	var hiddenRegex = new RegExp('\b' + hiddenCssClass + '\b', 'i');
+	var hiddenRegex = new RegExp('\\s?\\b' + hiddenCssClass + '\\b', 'i');
 	var contentNode = event.target.nextSibling;
-	var c = contentNode.getAttribute('class')
-	
+	var c = contentNode.getAttribute('class');
+
 	if(c.search(hiddenRegex) > -1) //Hidden
 		c = c.replace(hiddenRegex, '');
 	else
 		c = c + ' ' + hiddenCssClass;
-		
+
 	contentNode.setAttribute('class', c);
 }
 
