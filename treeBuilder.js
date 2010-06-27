@@ -62,11 +62,16 @@ NamedNodeMap.prototype.toNode = function(targetDocument, tagName, nameClassName,
 	var result = targetDocument.createElement(tagName);
 	if(groupClassName) result.setAttribute('class', groupClassName);
 	
+	var space = " ".toNode(targetDocument);
+	
 	for(var i=0;i<this.length;i++){
 		var r1 = targetDocument.createElement(tagName);
 		if(attributeClassName) r1.setAttribute('class', attributeClassName);
+		r1.appendChild(targetDocument.createTextNode(" "));
 		r1.appendChild(this[i].nodeName.toNode(targetDocument, tagName, nameClassName));
+		r1.appendChild(targetDocument.createTextNode('="'));
 		r1.appendChild(this[i].nodeValue.toNode(targetDocument, tagName, valueClassName));
+		r1.appendChild(targetDocument.createTextNode('"'));		
 		result.appendChild(r1);
 	}
 	
@@ -129,20 +134,20 @@ function foldingHandler(event){
 	event.cancelBubble = true;	
 
 	var t = event.target;
-	while(t.getAttribute('class') != 'xml-viewer-tag-start')
+	while(!t.getAttribute('class') || t.getAttribute('class').search(/\bxml-viewer-tag-collapsible\b/i) < 0)
 		t = t.parentNode;
+	t = t.nextSibling;
 
 	var hiddenCssClass = 'xml-viewer-hidden';
 	var hiddenRegex = new RegExp('\\s?\\b' + hiddenCssClass + '\\b', 'i');
-	var contentNode = t.nextSibling;
-	var c = contentNode.getAttribute('class');
+	var c = t.getAttribute('class');
 
 	if(c.search(hiddenRegex) > -1) //Hidden
 		c = c.replace(hiddenRegex, '');
 	else
 		c += ' ' + hiddenCssClass;
 
-	contentNode.setAttribute('class', c);
+	t.setAttribute('class', c);
 }
 
 
@@ -157,12 +162,16 @@ function buildNodeWithAttributes(node, tagName, className, targetDocument){
 		tag.appendChild(
 			node.attributes.toNode(targetDocument, 'span', 'xml-viewer-attribute-name', 'xml-viewer-attribute-value', 'xml-viewer-attribute', 'xml-viewer-attribute-set')
 			);
+	if(node.hasChildNodes()) 
+		tag.appendChild(">".toNode(targetDocument,'span','xml-viewer-start-bracket'));
 	result.appendChild(tag);
 	return result;
 }
 
 function buildEndNode(node, tagName, className, targetDocument){
-	return node.nodeName.toNode(targetDocument, tagName, className);
+	var result = node.nodeName.toNode(targetDocument, tagName, className);
+	result.insertBefore("<".toNode(targetDocument,'span','xml-viewer-end-bracket'), result.firstChild);
+	return result;
 }
 
 
@@ -179,7 +188,9 @@ function buildElementNode(node, newChildren, targetDocument){
 	result.setAttribute('class', isTagInline ? 'xml-viewer-tag xml-viewer-inline' : 'xml-viewer-tag');
 
 	//Create tags
-	var startTagStyle =  hasChildren ? 'xml-viewer-tag-start' : 'xml-viewer-tag-start xml-viewer-tag-end';
+	var startTagStyle = 'xml-viewer-tag-start';
+	if(!hasChildren) startTagStyle += ' xml-viewer-tag-end';
+	else if(!isTagInline) startTagStyle += ' xml-viewer-tag-collapsible';
 	result.appendChild(buildNodeWithAttributes(node, 'div', startTagStyle, targetDocument));
 
 	if(hasChildren){
