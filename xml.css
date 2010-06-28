@@ -66,10 +66,6 @@
 	cursor:pointer;
 }
 
-[class~="xml-viewer-tag-collapsible"] span:hover, [class~="xml-viewer-tag-collapsible"] span:hover *{
-	text-decoration:underline;
-}
-
 [class~="xml-viewer-tag-start"] {
 	padding-left:0em;
 	color:DarkRed;
