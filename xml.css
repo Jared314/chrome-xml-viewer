@@ -3,14 +3,13 @@
 /* 2.8 */
 [class|="xml-viewer"] {
 	margin: 0;
-	padding: 0;
+	padding: 0 0 0 2em;
 	border: 0;
 	outline: 0;
 	vertical-align: baseline;
 
 	background-color:white;	
 
-	padding-left:1em;
 	display:block;
 }
 
@@ -49,6 +48,7 @@
  */
 
 [class~="xml-viewer-tag-content"]{
+	white-space:pre;
 	color:black;
 }
 
@@ -58,9 +58,16 @@
  * Tags
  * 3s
  */
+[class~="xml-viewer-tag"]{
+	padding-left:0;
+}
 
 [class~="xml-viewer-tag-collapsible"] span {
 	cursor:pointer;
+}
+
+[class~="xml-viewer-tag-collapsible"] span:hover, [class~="xml-viewer-tag-collapsible"] span:hover *{
+	text-decoration:underline;
 }
 
 [class~="xml-viewer-tag-start"] {
@@ -95,6 +102,7 @@
 
 [class~="xml-viewer-processing-instruction"] {
 	color:blue;
+	padding-left:0;
 }
 
 [class~="xml-viewer-processing-instruction"]:before {
@@ -113,10 +121,10 @@
 
 [class~="xml-viewer-cdata"] {
 	color:black;
-	word-wrap: break-word; 
-	white-space: pre-wrap;
+	white-space: pre-line;
 	margin-top:0px;
 	margin-bottom:0px;
+	padding-left:0;	
 }
 
 [class~="xml-viewer-cdata"]:before {
@@ -159,10 +167,10 @@
 [class~="xml-viewer-comment"]{
 	color:gray;
 	display:block;
-	word-wrap: break-word; 
-	white-space: pre-wrap;
+	white-space: pre-line;
 	margin-top:0px;
 	margin-bottom:0px;	
+	padding-left:0;	
 }
 [class~="xml-viewer-comment"]:before {
 	color:blue;

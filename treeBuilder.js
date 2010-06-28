@@ -182,7 +182,8 @@ function buildElementNode(node, newChildren, targetDocument){
 			&& newChildren.length == 1 
 			&& newChildren[0] 
 			&& newChildren[0].nodeType == Node.TEXT_NODE
-			&& newChildren[0].nodeValue.length < 80;
+			&& newChildren[0].nodeValue.length < 80
+			&& newChildren[0].nodeValue.indexOf('\n') < 0;
 
 	//Create new wrapper node
 	var result = targetDocument.createElement('div');
@@ -213,6 +214,19 @@ function buildElementNode(node, newChildren, targetDocument){
 	return result;
 }
 
+function buildTextNode(targetDocument, node){
+	var result;
+	if(!node.nodeValue.isWhitespace()){
+		result = (targetDocument != node.ownerDocument) ? targetDocument.importNode(node, false) : node.cloneNode(false);
+		//Consume newlines and indentation
+		if(result){
+			result.nodeValue = result.nodeValue.replace(/(\r?\n)[\s\t]+/gm,'$1');
+			result.nodeValue = result.nodeValue.replace(/(^\r?\n)|(\r?\n$)/gm, '');
+		}
+	}
+	return result;
+}
+
 //Recursively transform the nodes in a tree
 function processNode(node, targetDocument){
 	var children = new Array();
@@ -232,8 +246,7 @@ function processNode(node, targetDocument){
 			result = buildElementNode(node, children, targetDocument);
 			break;
 		case Node.TEXT_NODE:
-			if(!node.nodeValue.isWhitespace())
-				result = (targetDocument != node.ownerDocument) ? targetDocument.importNode(node, false) : node.cloneNode(false);
+			result = buildTextNode(targetDocument, node);
 			break;
 		case Node.CDATA_SECTION_NODE:
 			result = node.nodeValue.toNode(targetDocument, 'pre', 'xml-viewer-cdata');
