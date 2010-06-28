@@ -1,6 +1,6 @@
 {
 	"name": "XML Viewer",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "Formats remote, and local, XML documents for easy viewing.",
 	"icons": { "16": "icon16.png",
 			   "48": "icon48.png",
