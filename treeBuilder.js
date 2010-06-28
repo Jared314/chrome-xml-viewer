@@ -178,7 +178,9 @@ function buildEndNode(node, tagName, className, targetDocument){
 function buildElementNode(node, newChildren, targetDocument){
 
 	var hasChildren = newChildren && newChildren.length > 0;
-	var isTagInline = newChildren && newChildren.length == 1 
+	var isTagInline = newChildren 
+			&& newChildren.length == 1 
+			&& newChildren[0] 
 			&& newChildren[0].nodeType == Node.TEXT_NODE
 			&& newChildren[0].nodeValue.length < 80;
 
