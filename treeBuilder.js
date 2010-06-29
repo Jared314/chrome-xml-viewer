@@ -58,6 +58,13 @@ NodeList.prototype.filter = function(callback){
 	return result;
 };
 
+NodeList.prototype.toArray = function(){
+	var result = [];
+	for(var i=0;i<l;i++)
+		result.push(this.item(i));
+	return result;
+};
+
 NamedNodeMap.prototype.toNode = function(targetDocument, tagName, nameClassName, valueClassName, attributeClassName, groupClassName){
 	var result = targetDocument.createElement(tagName);
 	if(groupClassName) result.setAttribute('class', groupClassName);
