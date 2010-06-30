@@ -34,11 +34,21 @@ String.prototype.toNode = function(targetDocument, tagName, className){
 	return result;
 };
 
+function fixEndingTags(value){
+	return value.replace(/<((br|hr|meta|dt|dd|basefont|img|frame|bgsound|link|base|wbr|spacer|col|isindex)[^>]*)>/ig, '<$1/>');
+}
+
 String.prototype.toDOM = function(){
-	var result = new DOMParser().parseFromString(this, "text/xml");
+	var value = this.replace(/^\s+/,'');
+	var result = new DOMParser().parseFromString(value, "text/xml");
 	//Check for parser error
-	if((result.getElementsByTagName("parsererror") || "").length > 0)
-		result = null;
+	if((result.getElementsByTagName("parsererror") || "").length > 0){
+		//TODO: Convert to thrown exception
+		var errorText = result.getElementsByTagName("parsererror")[0].getElementsByTagName('div')[0].innerText;
+		console.log("Parser Error: " + errorText);
+		//Attempt simple fixes
+		result = fixEndingTags(this).toDOM();
+	}
 	return result;
 };
 
