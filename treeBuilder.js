@@ -40,14 +40,15 @@ function fixEndingTags(value){
 
 String.prototype.toDOM = function(){
 	var value = this.replace(/^\s+/,'');
-	var result = new DOMParser().parseFromString(value, "text/xml");
+	var parser = new DOMParser();
+	var result = parser.parseFromString(value, "text/xml");
 	//Check for parser error
 	if((result.getElementsByTagName("parsererror") || "").length > 0){
 		//TODO: Convert to thrown exception
 		var errorText = result.getElementsByTagName("parsererror")[0].getElementsByTagName('div')[0].innerText;
 		console.log("Parser Error: " + errorText);
 		//Attempt simple fixes
-		result = fixEndingTags(this).toDOM();
+		result = parser.parseFromString(fixEndingTags(this), "text/xml");
 	}
 	return result;
 };
