@@ -2,12 +2,20 @@ if( !document.isChromeViewSourcePage())
 {
 	if(document.isXmlFile())
 	{
+		//Create html element to prevent conflict with XML Tree
+		var root = document.createElement('html');
+		var body = document.createElement('body');
+		root.appendChild(body);
+
 		//Transform
 		var d = transformXmlDocument(document, document);
-
+		body.appendChild(d);
+		d = root;
+		
 		//Attach CSS file
 		var pi = document.createProcessingInstruction('xml-stylesheet', 'type="text/css" href="' + chrome.extension.getURL('xml.css') + '"');
 		document.insertBefore(pi, document.firstChild);
+
 
 		//Attach the new tree
 		document.transformedTree = d;
@@ -19,6 +27,7 @@ if( !document.isChromeViewSourcePage())
 			document.originalTree = document.childNodes.toArray();
 			document.appendChild(d);
 		}
+
 	}
 	else if(document.isPlainTextXmlFile())
 	{
