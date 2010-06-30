@@ -29,6 +29,7 @@ if( !document.isChromeViewSourcePage())
 		for(var i=0;i<nodes.length;i++){
 			var node = nodes[i];
 			var d = node.innerText.toDOM();
+			if(!d) continue; //Parser Error
 			d = transformXmlDocument(d, document);
 
 			transformedTree.push(d);

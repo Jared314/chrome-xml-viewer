@@ -35,7 +35,11 @@ String.prototype.toNode = function(targetDocument, tagName, className){
 };
 
 String.prototype.toDOM = function(){
-	return new DOMParser().parseFromString(this, "text/xml");
+	var result = new DOMParser().parseFromString(this, "text/xml");
+	//Check for parser error
+	if((result.getElementsByTagName("parsererror") || "").length > 0)
+		result = null;
+	return result;
 };
 
 Array.prototype.reParent = function(newParent){
