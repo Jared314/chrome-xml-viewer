@@ -1,5 +1,6 @@
 if( !document.isChromeViewSourcePage())
 {
+
 	if(document.isXmlFile())
 	{
 		//Create html element to prevent conflict with XML Tree

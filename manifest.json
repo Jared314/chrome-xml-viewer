@@ -1,13 +1,15 @@
 {
 	"name": "XML Viewer",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"description": "Formats remote, and local, XML documents for easy viewing.",
 	"icons": { "16": "icon16.png",
 			   "48": "icon48.png",
 			  "128": "icon128.png" },
+	"permissions" : ["tabs", "http://*/*", "https://*/*"],
+	"background_page": "background.html",
 	"content_scripts": [ {
 		"js": [ "treeBuilder.js", "document_end.1.js" ],
-		"matches": [ "http://*/*", "https://*/*", "file:///*/*" ],
+		"matches": [ "file:///*/*" ],
 		"run_at": "document_end"
 	} ]
 }
