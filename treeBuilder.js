@@ -313,7 +313,7 @@ function transformXmlDocument(sDoc, dDoc){
 	if(sDoc.xmlVersion){
 		var xmlStandaloneText = sDoc.xmlStandalone ? 'yes' : 'no';
 		var xmlEncodingText = (sDoc.xmlEncoding ? sDoc.xmlEncoding : sDoc.inputEncoding);
-		xmlEncodingText = (xmlEncodingText) ? 'encoding="' + xmlEncodingText : '';
+		xmlEncodingText = (xmlEncodingText) ? ' encoding="' + xmlEncodingText : '';
 		var xmlTextNode = 'xml version="'+sDoc.xmlVersion+xmlEncodingText+'" standalone="'+xmlStandaloneText+'" ';
 		xmlTextNode = xmlTextNode.toNode(dDoc, 'div', 'xml-viewer-processing-instruction');
 		newRoot.insertBefore(xmlTextNode, newRoot.firstChild);
