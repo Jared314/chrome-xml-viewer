@@ -8,8 +8,8 @@
 	"permissions" : ["tabs", "http://*/*", "https://*/*"],
 	"background_page": "background.html",
 	"content_scripts": [ {
-		"js": [ "treeBuilder.js", "document_end.1.js" ],
-		"matches": [ "file:///*/*" ],
+		"js": [ "xregexp-min.js", "treeBuilder.js", "document_end.1.js" ],
+		"matches": [ "file://*/*" ],
 		"run_at": "document_end"
 	} ]
 }

@@ -134,15 +134,29 @@ Node.prototype.hasElementChildNodes = function(){
 };
 
 Document.prototype.isPlainTextXmlFile = function(){
+	var r = XRegExp('^\\s*<(\\S+).+</\\1>\\s*$','s');
+	
 	return this.body 
 		&& this.getElementsByTagName("pre").filter(
-			function(el){ return el != null && !el.hasElementChildNodes() && (el.innerText.match(/^\s*<\?xml\s/mi) || "").length > 0; }
+			function(el){ 
+				return el != null && !el.hasElementChildNodes() 
+					&& (
+						(el.innerText.match(/^\s*<\?xml\s/mi) || "").length > 0 
+						|| r.test(el.innerText)
+					); 
+			}
 			).length > 0;
 };
 
 Document.prototype.getPlainTextXmlFileNode = function(){
+	var r = XRegExp('^\\s*<(\\S+).+</\\1>\\s*$','s');
 	var nodes = this.getElementsByTagName("pre").filter(
-		function(el){ return el != null && (el.innerText.match(/^\s*<\?xml\s/mi) || "").length > 0; }
+		function(el){ 
+			return el != null && (
+						(el.innerText.match(/^\s*<\?xml\s/mi) || "").length > 0 
+						|| r.test(el.innerText)
+					);
+		}
 		);
 	return nodes;
 };
@@ -298,8 +312,9 @@ function transformXmlDocument(sDoc, dDoc){
 	//Add fake XML Processing Instruction
 	if(sDoc.xmlVersion){
 		var xmlStandaloneText = sDoc.xmlStandalone ? 'yes' : 'no';
-		var xmlEncodingText = sDoc.xmlEncoding ? sDoc.xmlEncoding : sDoc.inputEncoding;
-		var xmlTextNode = 'xml version="'+sDoc.xmlVersion+'" encoding="'+xmlEncodingText+'" standalone="'+xmlStandaloneText+'" ';
+		var xmlEncodingText = (sDoc.xmlEncoding ? sDoc.xmlEncoding : sDoc.inputEncoding);
+		xmlEncodingText = (xmlEncodingText) ? 'encoding="' + xmlEncodingText : '';
+		var xmlTextNode = 'xml version="'+sDoc.xmlVersion+xmlEncodingText+'" standalone="'+xmlStandaloneText+'" ';
 		xmlTextNode = xmlTextNode.toNode(dDoc, 'div', 'xml-viewer-processing-instruction');
 		newRoot.insertBefore(xmlTextNode, newRoot.firstChild);
 	}
