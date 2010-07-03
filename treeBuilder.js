@@ -145,7 +145,7 @@ Document.prototype.isPlainTextXmlFile = function(){
 						|| r.test(el.innerText)
 					); 
 			}
-			).length > 0;
+			).length == 1;
 };
 
 Document.prototype.getPlainTextXmlFileNode = function(){
