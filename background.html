@@ -2,10 +2,11 @@
 <script>
 	chrome.tabs.onUpdated.addListener(
 		function(tabId, changeInfo, tab) {
-			if(tab.status == "loading" && (tab.url.match(/^https?:/i) || "").length > 0)
+			if(tab.status == "loading" && tab.url.match(/^https?:.+$/i) != null){
 				chrome.tabs.executeScript(tabId, {file: "xregexp-min.js"});
-				chrome.tabs.executeScript(tabId, {file: "treeBuilder.js"});
+				chrome.tabs.executeScript(tabId, {file: "etl.js"});
 				chrome.tabs.executeScript(tabId, {file: "document_end.1.js"});
+			}
 		});
 </script>
 </html>
