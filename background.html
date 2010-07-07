@@ -4,7 +4,6 @@
 		function(tabId, changeInfo, tab) {
 			if(tab.status == "loading" && tab.url.match(/^https?:.+$/i) != null){
 				chrome.tabs.executeScript(tabId, {file: "xregexp-min.js"});
-				chrome.tabs.executeScript(tabId, {file: "util.js"});
 				chrome.tabs.executeScript(tabId, {file: "etl.js"});
 				chrome.tabs.executeScript(tabId, {file: "document_end.1.js"});
 			}
