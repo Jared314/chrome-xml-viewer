@@ -252,7 +252,7 @@ String.prototype.removeWord = function(value, delimiter, options){
 
 function isXml(elem){
 	var documentElement = (elem ? elem.ownerDocument || elem : 0).documentElement;
-	return documentElement ? documentElement.nodeName !== "HTML" : false;
+	return documentElement ? (documentElement.nodeName.toUpperCase() !== "HTML") : false;
 };
 
 
