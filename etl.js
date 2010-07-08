@@ -33,9 +33,12 @@ Array.prototype.executeFirst = function(item, item2){
 function buildNodeWithAttributes(node, tagName, className, targetDocument){
 	var result = targetDocument.createElement(tagName);
 	result.setAttribute('class', className);
-	
-	var tag = node.nodeName.toNode(targetDocument, 'span');
 
+	var tag = targetDocument.createElement('span');
+	tag.appendChild("+ ".toNode(targetDocument,'span','xml-viewer-tag-collapse-indicator'));
+	tag.appendChild(node.nodeName.toNode(targetDocument));
+
+	
 	if(node.hasAttributes())
 		tag.appendChild(
 			node.attributes.toNode(targetDocument, 'span', 'xml-viewer-attribute-name', 'xml-viewer-attribute-value', 'xml-viewer-attribute', 'xml-viewer-attribute-set')
@@ -61,17 +64,17 @@ function foldingHandler(event){
 	var t = event.target;
 	while(!t.getAttribute('class') || t.getAttribute('class').search(/\bxml-viewer-tag-collapsible\b/i) < 0)
 		t = t.parentNode;
-	t = t.nextSibling;
 
-	var hiddenCssClass = 'xml-viewer-hidden';
-	var c = t.getAttribute('class');
+	var indicator = t.firstChild.firstChild;
+	var content = t.nextSibling;
 
-	if(c.search(new RegExp('\\b' + hiddenCssClass + '\\b', 'i')) > -1) //Hidden
-		c = c.removeWord(hiddenCssClass, ' ', 'gi');
-	else
-		c += ' ' + hiddenCssClass;
+	//Show collapse indicator
+	var c = indicator.getAttribute('class');
+	indicator.setAttribute('class', c.flip('xml-viewer-visible'));
 
-	t.setAttribute('class', c);
+	//Hide contents
+	c = content.getAttribute('class');
+	content.setAttribute('class', c.flip('xml-viewer-hidden'));
 }
 
 function buildElementNode(node, newChildren, targetDocument){
@@ -102,7 +105,9 @@ function buildElementNode(node, newChildren, targetDocument){
 
 		//Attach nodes
 		result.appendChild(contentEl);
-		result.appendChild(buildEndNode(node, 'div', 'xml-viewer-tag-end', targetDocument));
+		var endNode = buildEndNode(node, 'div', 'xml-viewer-tag-end', targetDocument)
+		if(!isTagInline)endNode.insertBefore("+ ".toNode(targetDocument,'span','xml-viewer-tag-collapse-indicator'), endNode.firstChild);
+		result.appendChild(endNode);
 	}
 
 	// Attach folding handler
@@ -151,6 +156,7 @@ function processNode(node, targetDocument){
 			break;
 		case Node.PROCESSING_INSTRUCTION_NODE:
 			result = (node.nodeName + " " + node.nodeValue).toNode(targetDocument, 'div', 'xml-viewer-processing-instruction');
+			
 			break;
 		case Node.COMMENT_NODE:
 			result = node.nodeValue.toNode(targetDocument, 'pre', 'xml-viewer-comment');
@@ -238,6 +244,17 @@ String.prototype.removeWord = function(value, delimiter, options){
 	var r = new RegExp('('+delimiter+')?' + value + '('+delimiter+')?', (options)?options:'g');
 	var m = this.match(r);
 	return (m) ? this.replace(r, (m[1] && m[2])? delimiter : '') : this;
+};
+
+String.prototype.flip = function(value1, delimiter){
+	if(!delimiter) delimiter = ' ';
+	var result = this;
+	if(result.search(new RegExp('\\b' + value1 + '\\b', 'i')) > -1)
+		result = result.removeWord(value1, delimiter, 'gi');
+	else
+		result += ((result.length > 0)?delimiter:'') + value1;
+
+	return result;
 };
 
 })();

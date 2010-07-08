@@ -3,7 +3,7 @@
 /* 2.8 */
 [class|="xml-viewer"] {
 	margin: 0;
-	padding: 0 0 0 2em;
+	padding: 0 0 0 1.5em;
 	border: 0;
 	outline: 0;
 	vertical-align: baseline;
@@ -40,7 +40,16 @@
 	display:none;
 }
 
+[class~="xml-viewer-tag-collapse-indicator"]{
+	visibility:hidden;
+	padding-left:0;
+	display:inline;
+	color:blue;
+}
 
+[class~="xml-viewer-visible"]{
+	visibility:visible;
+}
 
 /* 
  * Content
@@ -98,7 +107,7 @@
 
 [class~="xml-viewer-processing-instruction"] {
 	color:blue;
-	padding-left:0;
+	padding-left:1.25em;
 }
 
 [class~="xml-viewer-processing-instruction"]:before {
@@ -120,7 +129,7 @@
 	white-space: pre-line;
 	margin-top:0px;
 	margin-bottom:0px;
-	padding-left:0;	
+	padding-left:1.25em;	
 }
 
 [class~="xml-viewer-cdata"]:before {
@@ -166,7 +175,7 @@
 	white-space: pre-line;
 	margin-top:0px;
 	margin-bottom:0px;	
-	padding-left:0;	
+	padding-left:1.25em;
 }
 [class~="xml-viewer-comment"]:before {
 	color:blue;
