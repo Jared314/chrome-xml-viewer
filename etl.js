@@ -89,6 +89,7 @@ function generateReplacementGetters(fragment){
 	return result;
 }
 
+//TODO: refactor out of String class
 String.prototype.toDomTemplate = function(d){
 	var fragment = d.createDocumentFragment();
 
@@ -161,7 +162,8 @@ var template = {
 "singleTag":'<div class="xml-viewer-tag"><div class="xml-viewer-tag-start xml-viewer-tag-end"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}</span></div></div>',
 "processinginstruction":'<div class="xml-viewer-processing-instruction">{name} {value}</div>',
 "comment":'<pre class="xml-viewer-comment">{value}</pre>',
-"cdata":'<pre class="xml-viewer-cdata">{value}</pre>'
+"cdata":'<pre class="xml-viewer-cdata">{value}</pre>',
+"document":'<div class="xml-viewer-document">{value}</div>'
 };
 
 //Node Rendering
@@ -287,20 +289,28 @@ function processNode(node, targetDocument){
 			result = buildTextNode(targetDocument, node);
 			break;
 		case Node.CDATA_SECTION_NODE:
-			//result = templating.processTemplate(template.cdata, {'value':node.nodeValue});		
-			result = node.nodeValue.toNode(targetDocument, 'pre', 'xml-viewer-cdata');
+			result = templating.processTemplate(template.cdata, {'value':node.nodeValue});
+			//result = node.nodeValue.toNode(targetDocument, 'pre', 'xml-viewer-cdata');
 			break;
 		case Node.PROCESSING_INSTRUCTION_NODE:
 			result = (node.nodeName + " " + node.nodeValue).toNode(targetDocument, 'div', 'xml-viewer-processing-instruction');
-			
 			break;
 		case Node.COMMENT_NODE:
-			result = node.nodeValue.toNode(targetDocument, 'pre', 'xml-viewer-comment');
+			result = templating.processTemplate(template.comment, {'value':node.nodeValue});
+			//result = node.nodeValue.toNode(targetDocument, 'pre', 'xml-viewer-comment');
 			break;
 		case Node.DOCUMENT_NODE:
-			result = targetDocument.createElement('div');
-			result.setAttribute('class', 'xml-viewer-document');
-			children.reParent(result);
+			//TODO: refactor
+			result = templating.processTemplate(template.document);
+			var value = template.document.values['value'](result);
+			var p = value.parentNode;
+			children.reParent(p);
+			p.removeChild(value);
+			result = result.firstChild;
+
+//			result = targetDocument.createElement('div');
+//			result.setAttribute('class', 'xml-viewer-document');
+//			children.reParent(result);
 			break;
 	}
 	
@@ -312,7 +322,9 @@ function processNode(node, targetDocument){
 var xmlTransformer = function(d, targetd){
 	//Initialize templates
 	template.cdata = template.cdata.toDomTemplate(targetd);
-	
+	template.comment = template.comment.toDomTemplate(targetd);
+	template.document = template.document.toDomTemplate(targetd);
+		
 	//Transform DOM Nodes
 	var newRoot = processNode(d, targetd);
 
@@ -322,7 +334,7 @@ var xmlTransformer = function(d, targetd){
 		var xmlStandaloneText = doc.xmlStandalone ? 'yes' : 'no';
 		var xmlEncodingText = (doc.xmlEncoding ? doc.xmlEncoding : doc.inputEncoding);
 		xmlEncodingText = (xmlEncodingText) ? ' encoding="' + xmlEncodingText : '';
-		var xmlTextNode = 'xml version="'+doc.xmlVersion+xmlEncodingText+'" standalone="'+xmlStandaloneText+'" ';
+		var xmlTextNode = 'xml version="'+doc.xmlVersion+'"'+xmlEncodingText+'" standalone="'+xmlStandaloneText+'" ';
 		xmlTextNode = xmlTextNode.toNode(targetd, 'div', 'xml-viewer-processing-instruction');
 		newRoot.insertBefore(xmlTextNode, newRoot.firstChild);
 	}
