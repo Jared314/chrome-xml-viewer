@@ -116,9 +116,11 @@ String.prototype.toDomTemplate = function(d){
 function set(node, value){
 	if(typeof value === "string")
 		node.nodeValue = value;
-	else if(value && value instanceof Node)
+	else if(value && value instanceof Node){
+		if(value.ownerDocument != node.ownerDocument)
+			value = node.ownerDocument.importNode(value);
 		node.parentNode.replaceChild(value, node);
-	else if(value && value instanceof Array && value.length > 0){
+	}else if(value && value instanceof Array && value.length > 0){
 		var ns = node.nextSibling;
 		var useInsert = (ns == null);
 		for(var i=0;i<value.length;i++)
