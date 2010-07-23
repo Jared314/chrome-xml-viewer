@@ -25,7 +25,8 @@ Array.prototype.executeFirst = function(item, item2){
 
 
 //
-// templating.js
+// templating
+//
 // template.tag = template.tag.toHtmlTemplate(document);
 // templating.processTemplate(template.tag, {'name':'TAG','attributes':null,'value':document.createTextNode('testvalue')});
 //
@@ -71,15 +72,16 @@ function generateReplacementGetters(fragment){
 		key = n.nodeValue.substr(1,n.nodeValue.length-2);
 
 		//handle back to back keys
+		//TODO: handle text nodes containing more than just keys
 		if(key.indexOf('}') > -1){
-			var keys = key.split('}{');
+			var keys = key.split('}{');	
 			key = keys.shift();
 			n.nodeValue = n.nodeValue.substr(0, key.length+2);
 			insertTextNodes(n, keys, '{', '}');
 		}
 		
 
-		fn = new Function('node', 'return node' + calculateJSPath(n));
+		fn = new Function('node', 'return node' + calculateJSPath(n) + ';');
 
 		if(!result[key]) result[key] = fn;
 		else if(result[key] instanceof Function) result[key] = [result[key], fn];
@@ -114,9 +116,18 @@ String.prototype.toDomTemplate = function(d){
 function set(node, value){
 	if(typeof value === "string")
 		node.nodeValue = value;
-	else if(value)
+	else if(value && value instanceof Node)
 		node.parentNode.replaceChild(value, node);
-	else
+	else if(value && value instanceof Array && value.length > 0){
+		var ns = node.nextSibling;
+		var useInsert = (ns == null);
+		for(var i=0;i<value.length;i++)
+			if(useInsert)
+				node.parentNode.insertBefore(value[i], ns);
+			else
+				node.parentNode.appendChild(value[i]);
+		node.parentNode.removeChild(node);
+	}else if(value == null || (value.length && value.length < 1))
 		node.parentNode.removeChild(node);
 }
 
@@ -146,7 +157,7 @@ templating.processTemplate = function(fragment, values){
 
 
 //
-// xmlTransformer.js
+// xmlTransformer
 //
 (function(){
 
@@ -154,13 +165,13 @@ var template = {
 "tag" : '<div class="xml-viewer-tag">\
 <div class="xml-viewer-tag-start xml-viewer-tag-collapsible"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}<span class="xml-viewer-start-bracket">&gt;</span></span></div>\
 <div class="xml-viewer-tag-content">{value}</div>\
-<div class="xml-viewer-tag-end"><span class="xml-viewer-tag-collapse-indicator">+ </span><span class="xml-viewer-end-bracket">&lt;</span>{name}\
+<div class="xml-viewer-tag-end"><span class="xml-viewer-tag-collapse-indicator">+ </span><span class="xml-viewer-end-bracket">&lt;</span>{name}</div>\
 </div>',
 "attribute":'<span class="xml-viewer-attribute"> <span class="xml-viewer-attribute-name">{name}</span>="<span class="xml-viewer-attribute-value">{value}</span>"</span>',
 "attributes":'<span class="xml-viewer-attribute-set">{value}</span>',
 "inlineTag":'<div class="xml-viewer-tag xml-viewer-inline"><div class="xml-viewer-tag-start"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}<span class="xml-viewer-start-bracket">&gt;</span></span></div><div class="xml-viewer-tag-content">{value}</div><div class="xml-viewer-tag-end"><span class="xml-viewer-end-bracket">&lt;</span>{name}</div></div>',
 "singleTag":'<div class="xml-viewer-tag"><div class="xml-viewer-tag-start xml-viewer-tag-end"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}</span></div></div>',
-"processinginstruction":'<div class="xml-viewer-processing-instruction">{name} {value}</div>',
+"processingInstruction":'<div class="xml-viewer-processing-instruction">{name}{value}</div>',
 "comment":'<pre class="xml-viewer-comment">{value}</pre>',
 "cdata":'<pre class="xml-viewer-cdata">{value}</pre>',
 "document":'<div class="xml-viewer-document">{value}</div>'
@@ -185,14 +196,6 @@ function buildNodeWithAttributes(node, tagName, className, targetDocument){
 	result.appendChild(tag);
 	return result;
 }
-
-function buildEndNode(node, tagName, className, targetDocument){
-	var result = node.nodeName.toNode(targetDocument, tagName, className);
-	result.insertBefore("<".toNode(targetDocument,'span','xml-viewer-end-bracket'), result.firstChild);
-	return result;
-}
-
-
 
 //Event Handler
 function foldingHandler(event){
@@ -223,34 +226,35 @@ function buildElementNode(node, newChildren, targetDocument){
 			&& newChildren[0].nodeType == Node.TEXT_NODE
 			&& newChildren[0].nodeValue.indexOf('\n') < 0;
 
-	//Create new wrapper node
-	var result = targetDocument.createElement('div');
-	result.setAttribute('name',node.nodeName);
-	result.setAttribute('class', isTagInline ? 'xml-viewer-tag xml-viewer-inline' : 'xml-viewer-tag');
+	var t = template.tag;
+	if(isTagInline) t = template.inlineTag;
+	else if(!hasChildren) t = template.singleTag;
 
-	//Create tags
-	var startTagStyle = 'xml-viewer-tag-start';
-	if(!hasChildren) startTagStyle += ' xml-viewer-tag-end';
-	else if(!isTagInline) startTagStyle += ' xml-viewer-tag-collapsible';
-	result.appendChild(buildNodeWithAttributes(node, 'div', startTagStyle, targetDocument));
+	var data = {'name':node.nodeName, 'attributes': null};
+	if(isTagInline)	data['value'] = node.firstChild;
+	
+	if(node.hasAttributes()){
+		var attrs = [];
+		for(var i=0,l=node.attributes.length;i<l;i++)
+			attrs.push(templating.processTemplate(template.attribute, {'name':node.attributes[i].nodeName,'value':node.attributes[i].nodeValue}));
 
-	if(hasChildren){
-		var contentEl = targetDocument.createElement('div');
-		contentEl.setAttribute('class','xml-viewer-tag-content');
+		data['attributes'] = templating.processTemplate(template.attributes, {'value':attrs});
+	}
 
-		newChildren.reParent(contentEl);
 
-		//Attach nodes
-		result.appendChild(contentEl);
-		var endNode = buildEndNode(node, 'div', 'xml-viewer-tag-end', targetDocument)
-		if(!isTagInline)endNode.insertBefore("+ ".toNode(targetDocument,'span','xml-viewer-tag-collapse-indicator'), endNode.firstChild);
-		result.appendChild(endNode);
+	var result = templating.processTemplate(t, data);
+
+	if(hasChildren && t.values['value']){
+		var contentEl = t.values['value'](result);
+		var p = contentEl.parentNode;
+		newChildren.reParent(p);
+		p.removeChild(contentEl);		
 	}
 
 	// Attach folding handler
 	if(!isTagInline)
-		result.firstChild.firstChild.addEventListener("click", foldingHandler, false);
-	
+		result.firstChild.firstChild.firstChild.addEventListener("click", foldingHandler, false);
+
 	return result;
 }
 
@@ -290,14 +294,12 @@ function processNode(node, targetDocument){
 			break;
 		case Node.CDATA_SECTION_NODE:
 			result = templating.processTemplate(template.cdata, {'value':node.nodeValue});
-			//result = node.nodeValue.toNode(targetDocument, 'pre', 'xml-viewer-cdata');
 			break;
 		case Node.PROCESSING_INSTRUCTION_NODE:
-			result = (node.nodeName + " " + node.nodeValue).toNode(targetDocument, 'div', 'xml-viewer-processing-instruction');
+			result = templating.processTemplate(template.processingInstruction, {'name':node.nodeName,'value':' '+node.nodeValue});
 			break;
 		case Node.COMMENT_NODE:
 			result = templating.processTemplate(template.comment, {'value':node.nodeValue});
-			//result = node.nodeValue.toNode(targetDocument, 'pre', 'xml-viewer-comment');
 			break;
 		case Node.DOCUMENT_NODE:
 			//TODO: refactor
@@ -307,10 +309,6 @@ function processNode(node, targetDocument){
 			children.reParent(p);
 			p.removeChild(value);
 			result = result.firstChild;
-
-//			result = targetDocument.createElement('div');
-//			result.setAttribute('class', 'xml-viewer-document');
-//			children.reParent(result);
 			break;
 	}
 	
@@ -321,10 +319,9 @@ function processNode(node, targetDocument){
 
 var xmlTransformer = function(d, targetd){
 	//Initialize templates
-	template.cdata = template.cdata.toDomTemplate(targetd);
-	template.comment = template.comment.toDomTemplate(targetd);
-	template.document = template.document.toDomTemplate(targetd);
-		
+	for(var t in template)
+		template[t] = template[t].toDomTemplate(targetd);
+
 	//Transform DOM Nodes
 	var newRoot = processNode(d, targetd);
 
@@ -417,7 +414,7 @@ String.prototype.flip = function(value1, delimiter){
 
 
 //
-// xml.js
+// xml
 //
 (function(){
 
@@ -461,7 +458,7 @@ etl.loaders.push(xmlDomLoader);
 
 
 //
-// genericXml.js
+// genericXml
 //
 (function(){
 
