@@ -5,5 +5,5 @@ Document.prototype.isChromeViewSourcePage = function(){
 };
 
 if(!document.isChromeViewSourcePage()){
-	var result = etl.executeFirst(document);
+	var result = etl.executeFirst(document, {'templateName':'reduced'});
 }

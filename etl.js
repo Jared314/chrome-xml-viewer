@@ -2,19 +2,21 @@ var etl = {
 	"extractors":[]
 	,"transformers":[]
 	,"loaders":[]
-	,"executeFirst":function(d){
-		var data = this.extractors.executeFirst(d);
+	,"executeFirst":function(d, obj){
+		obj = obj || {};
+		var data = this.extractors.executeFirst(d, obj);
 		if(data == null) return null;
-		data = this.transformers.executeFirst(data, d);
+		data = this.transformers.executeFirst(data, d, obj);
 		if(data == null) return null;		
-		return this.loaders.executeFirst(data, d);
+		return this.loaders.executeFirst(data, d, obj);
 	}
 };
 
-Array.prototype.executeFirst = function(item, item2){
+Array.prototype.executeFirst = function(){
 	var result = false;
 	for(var i=0,l=this.length;i<l && result === false;i++)
-		result = (item2) ? this[i](item,item2) : this[i](item);
+		result = this[i].apply(this, arguments);
+
 	return (result === false)?null:result;
 };
 
@@ -163,14 +165,14 @@ templating.processTemplate = function(fragment, values){
 var template = {
 	"standard":{
 "tag" : '<div class="xml-viewer-tag">\
-<div class="xml-viewer-tag-start xml-viewer-tag-collapsible"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}<span class="xml-viewer-start-bracket">&gt;</span></span></div>\
+<div class="xml-viewer-tag-start xml-viewer-tag-collapsible"><span><span class="xml-viewer-tag-collapse-indicator">+ </span><span class="xml-viewer-start-bracket">&lt;</span>{name}{attributes}<span class="xml-viewer-start-bracket">&gt;</span></span></div>\
 <div class="xml-viewer-tag-content">{value}</div>\
-<div class="xml-viewer-tag-end"><span class="xml-viewer-tag-collapse-indicator">+ </span><span class="xml-viewer-end-bracket">&lt;</span>{name}</div>\
+<div class="xml-viewer-tag-end"><span class="xml-viewer-tag-collapse-indicator">+ </span><span class="xml-viewer-end-bracket">&lt;/</span>{name}<span class="xml-viewer-end-bracket">&gt;</span></div>\
 </div>',
 "attribute":'<span class="xml-viewer-attribute"> <span class="xml-viewer-attribute-name">{name}</span>="<span class="xml-viewer-attribute-value">{value}</span>"</span>',
 "attributes":'<span class="xml-viewer-attribute-set">{value}</span>',
-"inlineTag":'<div class="xml-viewer-tag xml-viewer-inline"><div class="xml-viewer-tag-start"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}<span class="xml-viewer-start-bracket">&gt;</span></span></div><div class="xml-viewer-tag-content">{value}</div><div class="xml-viewer-tag-end"><span class="xml-viewer-end-bracket">&lt;</span>{name}</div></div>',
-"singleTag":'<div class="xml-viewer-tag"><div class="xml-viewer-tag-start xml-viewer-tag-end"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}</span></div></div>',
+"inlineTag":'<div class="xml-viewer-tag xml-viewer-inline"><div class="xml-viewer-tag-start"><span><span class="xml-viewer-tag-collapse-indicator">+ </span><span class="xml-viewer-start-bracket">&lt;</span>{name}{attributes}<span class="xml-viewer-start-bracket">&gt;</span></span></div><div class="xml-viewer-tag-content">{value}</div><div class="xml-viewer-tag-end"><span class="xml-viewer-end-bracket">&lt;/</span>{name}<span class="xml-viewer-end-bracket">&gt;</span></div></div>',
+"singleTag":'<div class="xml-viewer-tag"><div class="xml-viewer-tag-start xml-viewer-tag-end"><span><span class="xml-viewer-tag-collapse-indicator">+ </span><span class="xml-viewer-start-bracket">&lt;</span>{name}{attributes}<span class="xml-viewer-start-bracket">/&gt;</span></span></div></div>',
 "processingInstruction":'<div class="xml-viewer-processing-instruction">{name}{value}</div>',
 "comment":'<pre class="xml-viewer-comment">{value}</pre>',
 "cdata":'<pre class="xml-viewer-cdata">{value}</pre>',
@@ -309,9 +311,11 @@ function processNode(node, targetDocument){
 
 
 
-var xmlTransformer = function(d, targetd){
+var xmlTransformer = function(d, targetd, obj){
 	//Initialize templates
-	template = template['reduced'];
+	var templateName = obj.templateName || 'standard';
+
+	template = template[templateName];
 	for(var t in template)
 		template[t] = template[t].toDomTemplate(targetd);
 
@@ -411,12 +415,13 @@ var xmlDomExtractor = function(d){
 	return d;
 };
 
-var xmlDomLoader = function(d, targetd){
+var xmlDomLoader = function(d, targetd, obj){
 	if(!isXml(targetd)) return false;
-
+	
+	var templateName = obj.templateName || 'standard';
 	//Attach CSS file
 	//TODO remove chrome extension dependency
-	var pi = targetd.createProcessingInstruction('xml-stylesheet', 'type="text/css" href="' + chrome.extension.getURL('xml.css') + '"');
+	var pi = targetd.createProcessingInstruction('xml-stylesheet', 'type="text/css" href="' + chrome.extension.getURL('xml.'+templateName+'.css') + '"');
 	targetd.insertBefore(pi, targetd.firstChild);
 
 	//Attach the new tree
@@ -455,7 +460,7 @@ var xmlFormatDomExtractor = function(d){
 	return (pre)?pre:false;
 };
 
-var htmlXmlFileDomLoader = function(d, targetd){
+var htmlXmlFileDomLoader = function(d, targetd, obj){
 	
 	var pre = targetd.querySelectorAll('body > pre');
 	if(pre.length != 1) return false;
@@ -463,9 +468,10 @@ var htmlXmlFileDomLoader = function(d, targetd){
 	//Load
 	pre[0].parentNode.replaceChild(d, pre[0]);
 
+	var templateName = obj.templateName || 'standard';
 	//Append CSS
 	//TODO remove chrome extension dependency
-	targetd.insertHtmlLinkElement(chrome.extension.getURL('xml.css'));
+	targetd.insertHtmlLinkElement(chrome.extension.getURL('xml.'+templateName+'.css'));
 
 	return true;
 };
