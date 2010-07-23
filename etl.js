@@ -161,6 +161,7 @@ templating.processTemplate = function(fragment, values){
 (function(){
 
 var template = {
+	"standard":{
 "tag" : '<div class="xml-viewer-tag">\
 <div class="xml-viewer-tag-start xml-viewer-tag-collapsible"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}<span class="xml-viewer-start-bracket">&gt;</span></span></div>\
 <div class="xml-viewer-tag-content">{value}</div>\
@@ -174,6 +175,22 @@ var template = {
 "comment":'<pre class="xml-viewer-comment">{value}</pre>',
 "cdata":'<pre class="xml-viewer-cdata">{value}</pre>',
 "document":'<div class="xml-viewer-document">{value}</div>'
+	},
+	"reduced":{
+"tag" : '<div class="xml-viewer-tag">\
+<div class="xml-viewer-tag-start xml-viewer-tag-collapsible"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}<span class="xml-viewer-start-bracket">&gt;</span></span></div>\
+<div class="xml-viewer-tag-content">{value}</div>\
+<div class="xml-viewer-tag-end"><span class="xml-viewer-tag-collapse-indicator">+ </span><span class="xml-viewer-end-bracket">&lt;</span>{name}</div>\
+</div>',
+"attribute":'<span class="xml-viewer-attribute"> <span class="xml-viewer-attribute-name">{name}</span>="<span class="xml-viewer-attribute-value">{value}</span>"</span>',
+"attributes":'<span class="xml-viewer-attribute-set">{value}</span>',
+"inlineTag":'<div class="xml-viewer-tag xml-viewer-inline"><div class="xml-viewer-tag-start"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}<span class="xml-viewer-start-bracket">&gt;</span></span></div><div class="xml-viewer-tag-content">{value}</div><div class="xml-viewer-tag-end"><span class="xml-viewer-end-bracket">&lt;</span>{name}</div></div>',
+"singleTag":'<div class="xml-viewer-tag"><div class="xml-viewer-tag-start xml-viewer-tag-end"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}</span></div></div>',
+"processingInstruction":'<div class="xml-viewer-processing-instruction">{name}{value}</div>',
+"comment":'<pre class="xml-viewer-comment">{value}</pre>',
+"cdata":'<pre class="xml-viewer-cdata">{value}</pre>',
+"document":'<div class="xml-viewer-document">{value}</div>'
+	}
 };
 
 //Event Handler
@@ -229,10 +246,6 @@ function buildElementNode(node, newChildren, targetDocument){
 		newChildren.reParent(p);
 		p.removeChild(contentEl);		
 	}
-
-	// Attach folding handler
-	if(!isTagInline)
-		result.firstChild.firstChild.firstChild.addEventListener("click", foldingHandler, false);
 
 	return result;
 }
@@ -298,6 +311,7 @@ function processNode(node, targetDocument){
 
 var xmlTransformer = function(d, targetd){
 	//Initialize templates
+	template = template['reduced'];
 	for(var t in template)
 		template[t] = template[t].toDomTemplate(targetd);
 
@@ -313,6 +327,13 @@ var xmlTransformer = function(d, targetd){
 		var xmlTextNode = 'xml version="'+doc.xmlVersion+'"'+xmlEncodingText+'" standalone="'+xmlStandaloneText+'" ';
 		xmlTextNode = xmlTextNode.toNode(targetd, 'div', 'xml-viewer-processing-instruction');
 		newRoot.insertBefore(xmlTextNode, newRoot.firstChild);
+	}
+
+	// Attach folding handlers
+	var nodes = newRoot.querySelectorAll("div[class~='xml-viewer-tag-collapsible'] > span");
+	if(nodes && nodes.length > 0){
+		for(var i=0,l=nodes.length;i<l;i++)
+	 		nodes[i].addEventListener("click", foldingHandler, false);
 	}
 
 	return newRoot;
