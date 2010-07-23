@@ -21,13 +21,133 @@ Array.prototype.executeFirst = function(item, item2){
 
 
 
+
+
+
+//
+// templating.js
+//
 (function(){
 
+function calculateJSPath(node){
+	if(node.nodeType == Node.DOCUMENT_FRAGMENT_NODE || node.nodeType == Node.DOCUMENT_NODE) 
+		return '';
+
+	var position = 0;
+	var n = node;
+
+	while((n = n.previousSibling) != null) position++;
+	var c = '.childNodes['+position+']';
+	//optimizations
+	if(position == 0) c = '.firstChild';
+	
+	return calculateJSPath(node.parentNode)+c;
+};
+
+function insertTextNodes(node, items, prefix, suffix){
+	var d = node.ownerDocument;
+	var next = node.nextSibling;
+	var parent = node.parentNode;
+	for(var i=0;i<items.length;i++)
+		if(next)
+			parent.insertBefore(d.createTextNode(prefix+items[i]+suffix), next);
+		else
+			parent.appendChild(d.createTextNode(prefix+items[i]+suffix));
+}
+
+function generateReplacementGetters(fragment){
+	var result = {};
+	
+	var nodes = document.createNodeIterator(fragment, NodeFilter.SHOW_TEXT, 
+		function(n){ return (n.nodeValue.search(/{[^}]*}/) > -1 )? NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_SKIP; }
+		, false);
+
+	var n, key, fn;
+	while((n = nodes.nextNode()) != null){
+		key = n.nodeValue.substr(1,n.nodeValue.length-2);
+
+		//handle back to back keys
+		if(key.indexOf('}') > -1){
+			var keys = key.split('}{');
+			key = keys.shift();
+			n.nodeValue = n.nodeValue.substr(0, key.length+2);
+			insertTextNodes(n, keys, '{', '}');
+		}
+		
+
+		fn = new Function('node', 'return node' + calculateJSPath(n));
+
+		if(!result[key]) result[key] = fn;
+		else if(result[key] instanceof Function) result[key] = [result[key], fn];
+		else if(result[key] instanceof Array) result[key].push(fn);
+    }
+	
+	return result;
+}
+
+String.prototype.toHtmlTemplate = function(d){
+	d = d || document;
+	var fragment = d.createDocumentFragment();
+	var base = d.createElement('div');
+	base.innerHTML = this;
+	fragment.appendChild(base.firstChild);
+	
+	//pre-parse replacement points
+	fragment.values = generateReplacementGetters(fragment);
+	
+	return fragment;
+};
+
+function set(node, value){
+	if(typeof value === "string")
+		node.nodeValue = value;
+	else if(value)
+		node.parentNode.replaceChild(value, node);
+	else
+		node.parentNode.removeChild(node);
+}
+
+Node.prototype.appendChildTemplate = function(fragment, values){
+	if(!fragment.values) return false;
+	
+	var n = fragment.cloneNode(true);
+	
+	var value, fn;
+	if(values)
+		for(var item in values)
+			if(fragment.values[item]){
+				value = values[item];
+				fn = fragment.values[item];
+				if(fn instanceof Function) set(fn(n), value);
+				else if(fn instanceof Array) fn.map(function(f){ set(f(n), value); });
+			}
+	
+	return this.appendChild(n);
+};
+
+})();
 
 
 
 
 
+
+//
+// xmlTransformer.js
+//
+(function(){
+
+var template = {
+"tag" : '<div class="xml-viewer-tag">\
+<div class="xml-viewer-tag-start xml-viewer-tag-collapsible"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}<span class="xml-viewer-start-bracket">&gt;</span></span></div>\
+<div class="xml-viewer-tag-content">{value}</div>\
+<div class="xml-viewer-tag-end"><span class="xml-viewer-tag-collapse-indicator">+ </span><span class="xml-viewer-end-bracket">&lt;</span>{name}\
+</div>',
+"attribute":'<span class="xml-viewer-attribute"> <span class="xml-viewer-attribute-name">{name}</span>="<span class="xml-viewer-attribute-value">{value}</span>"</span>',
+"attributes":'<span class="xml-viewer-attribute-set">{value}</span>',
+"inlineTag":'<div class="xml-viewer-tag xml-viewer-inline"><div class="xml-viewer-tag-start"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}<span class="xml-viewer-start-bracket">&gt;</span></span></div><div class="xml-viewer-tag-content">{value}</div><div class="xml-viewer-tag-end"><span class="xml-viewer-end-bracket">&lt;</span>{name}</div></div>',
+"singleTag":'<div class="xml-viewer-tag"><div class="xml-viewer-tag-start xml-viewer-tag-end"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}</span></div></div>'
+};
 
 //Node Rendering
 function buildNodeWithAttributes(node, tagName, className, targetDocument){
@@ -264,7 +384,10 @@ String.prototype.flip = function(value1, delimiter){
 
 
 
-// XML File
+
+//
+// xml.js
+//
 (function(){
 
 function isXml(elem){
@@ -306,7 +429,9 @@ etl.loaders.push(xmlDomLoader);
 
 
 
-// XML-Look-Alike File
+//
+// genericXml.js
+//
 (function(){
 
 var xmlFormatDomExtractor = function(d){
