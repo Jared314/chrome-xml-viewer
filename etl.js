@@ -336,24 +336,6 @@ Array.prototype.reParent = function(newParent){
 		}
 };
 
-NamedNodeMap.prototype.toNode = function(targetDocument, tagName, nameClassName, valueClassName, attributeClassName, groupClassName){
-	var result = targetDocument.createElement(tagName);
-	if(groupClassName) result.setAttribute('class', groupClassName);
-	
-	for(var i=0;i<this.length;i++){
-		var r1 = targetDocument.createElement(tagName);
-		if(attributeClassName) r1.setAttribute('class', attributeClassName);
-		r1.appendChild(targetDocument.createTextNode(" "));
-		r1.appendChild(this[i].nodeName.toNode(targetDocument, tagName, nameClassName));
-		r1.appendChild(targetDocument.createTextNode('="'));
-		r1.appendChild(this[i].nodeValue.toNode(targetDocument, tagName, valueClassName));
-		r1.appendChild(targetDocument.createTextNode('"'));		
-		result.appendChild(r1);
-	}
-	
-	return result;
-};
-
 String.prototype.isWhitespace = function(){
 	return this.replace(/[\u000a\u0009\u000b\u000c\u000d\u0020\u00a0\u0085\u1680\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000]+/g, '').length < 1;
 };
