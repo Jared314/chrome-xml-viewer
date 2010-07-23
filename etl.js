@@ -26,6 +26,8 @@ Array.prototype.executeFirst = function(item, item2){
 
 //
 // templating.js
+// template.tag = template.tag.toHtmlTemplate(document);
+// el.appendChildTemplate(template.tag, {'name':'TAG','attributes':null,'value':document.createTextNode('testvalue')});
 //
 (function(){
 
@@ -146,7 +148,10 @@ var template = {
 "attribute":'<span class="xml-viewer-attribute"> <span class="xml-viewer-attribute-name">{name}</span>="<span class="xml-viewer-attribute-value">{value}</span>"</span>',
 "attributes":'<span class="xml-viewer-attribute-set">{value}</span>',
 "inlineTag":'<div class="xml-viewer-tag xml-viewer-inline"><div class="xml-viewer-tag-start"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}<span class="xml-viewer-start-bracket">&gt;</span></span></div><div class="xml-viewer-tag-content">{value}</div><div class="xml-viewer-tag-end"><span class="xml-viewer-end-bracket">&lt;</span>{name}</div></div>',
-"singleTag":'<div class="xml-viewer-tag"><div class="xml-viewer-tag-start xml-viewer-tag-end"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}</span></div></div>'
+"singleTag":'<div class="xml-viewer-tag"><div class="xml-viewer-tag-start xml-viewer-tag-end"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}</span></div></div>',
+"processinginstruction":'<div class="xml-viewer-processing-instruction">{name} {value}</div>',
+"comment":'<pre class="xml-viewer-comment">{value}</pre>',
+"cdata":'<pre class="xml-viewer-cdata">{value}</pre>'
 };
 
 //Node Rendering
