@@ -177,26 +177,6 @@ var template = {
 "document":'<div class="xml-viewer-document">{value}</div>'
 };
 
-//Node Rendering
-function buildNodeWithAttributes(node, tagName, className, targetDocument){
-	var result = targetDocument.createElement(tagName);
-	result.setAttribute('class', className);
-
-	var tag = targetDocument.createElement('span');
-	tag.appendChild("+ ".toNode(targetDocument,'span','xml-viewer-tag-collapse-indicator'));
-	tag.appendChild(node.nodeName.toNode(targetDocument));
-
-	
-	if(node.hasAttributes())
-		tag.appendChild(
-			node.attributes.toNode(targetDocument, 'span', 'xml-viewer-attribute-name', 'xml-viewer-attribute-value', 'xml-viewer-attribute', 'xml-viewer-attribute-set')
-			);
-	if(node.hasChildNodes()) 
-		tag.appendChild(">".toNode(targetDocument,'span','xml-viewer-start-bracket'));
-	result.appendChild(tag);
-	return result;
-}
-
 //Event Handler
 function foldingHandler(event){
 	event.cancelBubble = true;	
