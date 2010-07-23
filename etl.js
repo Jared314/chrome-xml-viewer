@@ -27,8 +27,10 @@ Array.prototype.executeFirst = function(item, item2){
 //
 // templating.js
 // template.tag = template.tag.toHtmlTemplate(document);
-// el.appendChildTemplate(template.tag, {'name':'TAG','attributes':null,'value':document.createTextNode('testvalue')});
+// templating.processTemplate(template.tag, {'name':'TAG','attributes':null,'value':document.createTextNode('testvalue')});
 //
+var templating = {};
+
 (function(){
 
 function calculateJSPath(node){
@@ -87,13 +89,21 @@ function generateReplacementGetters(fragment){
 	return result;
 }
 
-String.prototype.toHtmlTemplate = function(d){
-	d = d || document;
+String.prototype.toDomTemplate = function(d){
 	var fragment = d.createDocumentFragment();
-	var base = d.createElement('div');
-	base.innerHTML = this;
-	fragment.appendChild(base.firstChild);
-	
+
+	var base;
+	if(d instanceof HTMLDocument){ //HTML
+		var base = d.createElement('div');
+		base.innerHTML = this;
+		base = base.firstChild;
+	}else{ //XML
+		base = (new DOMParser()).parseFromString(this, "text/xml");
+		base = d.importNode(base.firstChild, true);
+	}
+
+	fragment.appendChild(base);
+
 	//pre-parse replacement points
 	fragment.values = generateReplacementGetters(fragment);
 	
@@ -109,7 +119,7 @@ function set(node, value){
 		node.parentNode.removeChild(node);
 }
 
-Node.prototype.appendChildTemplate = function(fragment, values){
+templating.processTemplate = function(fragment, values){
 	if(!fragment.values) return false;
 	
 	var n = fragment.cloneNode(true);
@@ -123,8 +133,8 @@ Node.prototype.appendChildTemplate = function(fragment, values){
 				if(fn instanceof Function) set(fn(n), value);
 				else if(fn instanceof Array) fn.map(function(f){ set(f(n), value); });
 			}
-	
-	return this.appendChild(n);
+
+	return n;
 };
 
 })();
@@ -277,6 +287,7 @@ function processNode(node, targetDocument){
 			result = buildTextNode(targetDocument, node);
 			break;
 		case Node.CDATA_SECTION_NODE:
+			//result = templating.processTemplate(template.cdata, {'value':node.nodeValue});		
 			result = node.nodeValue.toNode(targetDocument, 'pre', 'xml-viewer-cdata');
 			break;
 		case Node.PROCESSING_INSTRUCTION_NODE:
@@ -299,6 +310,9 @@ function processNode(node, targetDocument){
 
 
 var xmlTransformer = function(d, targetd){
+	//Initialize templates
+	template.cdata = template.cdata.toDomTemplate(targetd);
+	
 	//Transform DOM Nodes
 	var newRoot = processNode(d, targetd);
 
