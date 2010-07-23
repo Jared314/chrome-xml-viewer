@@ -37,14 +37,9 @@ var templating = {};
 function calculateJSPath(node){
 	if(node.nodeType == Node.DOCUMENT_FRAGMENT_NODE || node.nodeType == Node.DOCUMENT_NODE) 
 		return '';
-
-	var position = 0;
 	var n = node;
-
-	while((n = n.previousSibling) != null) position++;
-	var c = '.childNodes['+position+']';
-	//optimizations
-	if(position == 0) c = '.firstChild';
+	var c = '.firstChild'
+	while((n = n.previousSibling) != null) c+='.nextSibling';
 	
 	return calculateJSPath(node.parentNode)+c;
 };
@@ -145,7 +140,9 @@ templating.processTemplate = function(fragment, values){
 				value = values[item];
 				fn = fragment.values[item];
 				if(fn instanceof Function) set(fn(n), value);
-				else if(fn instanceof Array) fn.map(function(f){ set(f(n), value); });
+				else if(fn instanceof Array)
+					for(var i=0,l=fn.length;i<l;i++)
+						set(fn[i](n), value);
 			}
 
 	return n;
