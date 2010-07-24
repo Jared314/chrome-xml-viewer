@@ -4,7 +4,7 @@
 <title>Options</title>
 <script type="text/javascript">
 function $(id, d){ return (d || document).getElementById(id); }
-NodeList.prototype.map = function(callback){
+NodeList.prototype.forEach = function(callback){
 	for(var i=0,l=this.length;i<l;i++)
 		if(this.item(i)) callback(this.item(i));
 };
@@ -45,9 +45,9 @@ function handleOnLoad(){
 				
 		//Attach event handlers
 		var items = document.querySelectorAll('input[name="template_name"]');
-		items.map(function(item){ if(!item.disabled) item.addEventListener('click', handleSettingsChange); }, false);
+		items.forEach(function(item){ if(!item.disabled) item.addEventListener('click', handleSettingsChange, false); });
 		var items = document.querySelectorAll('input[name="color_scheme_name"]');
-		items.map(function(item){ if(!item.disabled) item.addEventListener('click', handleSettingsChange); }, false);
+		items.forEach(function(item){ if(!item.disabled) item.addEventListener('click', handleSettingsChange, false); });
 	});
 }
 </script>
