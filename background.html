@@ -8,5 +8,14 @@
 				chrome.tabs.executeScript(tabId, {file: "document_end.1.js"});
 			}
 		});
+	
+	chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
+		if(request.name == "xmlviewer.getOptions")
+			sendResponse( {"templateName": ( localStorage['templateName'] || "reduced")} );
+		else if(request.name == "xmlviewer.setOptions"){
+			localStorage['templateName'] = request.data['templateName'];
+			sendResponse( true );
+		}
+	});
 </script>
 </html>

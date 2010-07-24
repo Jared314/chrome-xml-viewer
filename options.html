@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Options</title>
+<script type="text/javascript">
+function $(id, d){ return (d || document).getElementById(id); }
+NodeList.prototype.map = function(callback){
+	for(var i=0,l=this.length;i<l;i++)
+		if(this.item(i)) callback(this.item(i));
+};
+
+function save(templateName) {
+	chrome.extension.sendRequest({"name": "xmlviewer.setOptions", "data":
+		{"templateName": templateName}
+		}, function(response){});
+}
+
+function load(callback){
+	chrome.extension.sendRequest({"name": "xmlviewer.getOptions"}, callback);
+}
+
+function handleTemplateNameOnChange(event){
+	save(event.target.value);
+}
+
+function handleOnLoad(){
+	load(function(response){
+		$('template_name_'+response.templateName).checked = true;
+		var templateNameItems = document.querySelectorAll('input[name="template_name"]');
+		templateNameItems.map(function(item){ if(!item.disabled) item.addEventListener('click', handleTemplateNameOnChange); }, false);
+	});
+}
+</script>
+
+<style>
+body{
+	margin: 0.5em;
+	font-family: DejaVu Sans Mono, Menlo, Consolas, Courier New, Lucida Console, serif;
+	background-color:WhiteSmoke;
+}
+ol{
+	margin:0.5em 0;
+	-webkit-padding-start:0.5em;
+	list-style-type: none;
+}
+fieldset{
+	border-radius: 3px;
+	border:0;
+	-webkit-box-shadow: 0px 1px 3px gray;
+	white-space:nowrap;
+	width:0%;
+	margin-left:auto;
+	margin-right:auto;
+	background-color:white;
+	margin-bottom:2em;
+}
+input[type="radio"]{
+	cursor:pointer;
+}
+label{
+	cursor:pointer;
+	margin-left:2px;
+}
+label.disabled{
+	color:gray;
+}
+header{
+	white-space:nowrap;
+	margin-bottom:2em;
+	background-color:white;
+	padding:5px;
+	-webkit-box-shadow: 0px 1px 3px gray;
+	
+}
+header h1{
+	display:inline;
+	padding:0.5em;
+	vertical-align:middle;
+	font-weight:normal;
+	font-size:1.33em;
+	text-shadow:0px 0px 1px gray;
+}
+header img{
+	display:inline;
+	vertical-align:middle;
+}
+legend{
+	border-radius: 0 0 2px 2px;
+	background-color:white;
+	-webkit-box-shadow: 0px 1px 2px gray;
+	background-color:WhiteSmoke;
+	padding:3px 6px;
+	font-size:0.90em;
+}
+li{
+	border-radius: 3px;
+	padding-right: 3px;
+	border:1px solid white;
+}
+li:hover{
+	background-color: #FFFFCC;
+	border:1px solid yellow;
+}
+</style>
+
+<style>
+.standard-tag-start { color:DarkRed; }
+.standard-tag-content { color:black; }
+.standard-start-bracket { color:blue; }
+.standard-end-bracket { color:blue; }
+.standard-tag-end:not(.standard-tag-start) { color:DarkRed; }
+.standard-attribute-set, .standard-attribute-set * { color:DarkRed; }
+.standard-attribute-value { color:blue; }
+</style>
+
+<style>
+.reduced-tag-start {
+	padding-left:1.3em;
+	color:DarkRed;
+}
+.reduced-tag-content { color:black; }
+.reduced-start-bracket { color:blue; }
+.reduced-end-bracket { color:#CCCCFF; }
+.reduced-tag-end:not(.reduced-tag-start) { color:#E8CCCC; }
+.reduced-attribute-set, .reduced-attribute-set * { color:DarkRed; }
+.reduced-attribute-value { color:blue; }
+</style>
+</head>
+
+<body onload="handleOnLoad()">
+<header><img src="icon48.png" /><h1>XML Viewer Options</h1></header>
+<fieldset>
+<legend>XML Format</legend>
+<ol>
+<li><input type="radio" name="template_name" value="standard" id="template_name_standard" checked="checked"/><label for="template_name_standard">Standard <span class="example"><span class="standard-tag-start"><span class="standard-start-bracket">&lt;</span>item <span class="standard-attribute-set"><span class="standard-attribute-name">partNum</span>="<span class="standard-attribute-value">872-AA</span>"</span><span class="standard-start-bracket">&gt;</span></span><span class="standard-tag-content">Lawnmower</span><span class="standard-tag-end"><span class="standard-end-bracket">&lt;/</span>item<span class="standard-end-bracket">&gt;</span></span></span></label></li>
+<li><input type="radio" name="template_name" value="reduced" id="template_name_reduced" /><label for="template_name_reduced">Reduced <span class="example"><span class="reduced-tag-start">item <span class="reduced-attribute-set"><span class="reduced-attribute-name">partNum</span>="<span class="reduced-attribute-value">872-AA</span>"</span><span class="reduced-start-bracket">&gt;</span></span><span class="reduced-tag-content">Lawnmower</span><span class="reduced-tag-end"><span class="reduced-end-bracket">&lt;</span>item</span></span></label></li>
+<li><input type="radio" name="template_name" value="custom" id="template_name_custom" disabled="disabled"/><label for="template_name_custom" class="disabled">Custom (Not Implemented)</label></li>
+</ol>
+</fieldset>
+<fieldset>
+<legend>Color Scheme</legend>
+<ol>
+<li><input type="radio" name="color_scheme_name" value="standard" id="color_scheme_name_standard" checked="checked"/><label for="color_scheme_name_standard">Standard <span class="example"><span class="standard-tag-start"><span class="standard-start-bracket">&lt;</span>item <span class="standard-attribute-set"><span class="standard-attribute-name">partNum</span>="<span class="standard-attribute-value">872-AA</span>"</span><span class="standard-start-bracket">&gt;</span></span><span class="standard-tag-content">Lawnmower</span><span class="standard-tag-end"><span class="standard-end-bracket">&lt;/</span>item<span class="standard-end-bracket">&gt;</span></span></span></label></li>
+<li><input type="radio" name="color_scheme_name" value="custom" id="color_scheme_name_custom" disabled="disabled"/><label for="color_scheme_name_custom" class="disabled">Custom (Not Implemented)</label></li>
+</ol>
+</fieldset>
+</body>
+</html>

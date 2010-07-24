@@ -5,5 +5,7 @@ Document.prototype.isChromeViewSourcePage = function(){
 };
 
 if(!document.isChromeViewSourcePage()){
-	var result = etl.executeFirst(document, {'templateName':'reduced'});
+	chrome.extension.sendRequest({"name": "xmlviewer.getOptions"}, function(response){
+		var result = etl.executeFirst(document, response);
+		});
 }
