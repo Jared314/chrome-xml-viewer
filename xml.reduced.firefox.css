@@ -92,12 +92,12 @@
 [class~="xml-viewer-end-bracket"]{
 	padding-left:0em;
 	display:inline;
-	color:black;
+	color:#CCCCCC;
 	font-weight:normal;
 }
 
 [class~="xml-viewer-tag-end"]:not([class~="xml-viewer-tag-start"]){
-	color:purple;
+	color:#D9B2D9;
 	padding-left:0em;
 	font-weight:bold;
 }
