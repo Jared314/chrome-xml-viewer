@@ -89,12 +89,11 @@
 [class~="xml-viewer-end-bracket"]{
 	padding-left:0em;
 	display:inline;
-	color:#CCCCFF;
+	color:blue;
 }
 
-/* Tag Fade Effect */
 [class~="xml-viewer-tag-end"]:not([class~="xml-viewer-tag-start"]){
-	color:#E8CCCC;
+	color:DarkRed;
 	padding-left:0em;	
 }
 
