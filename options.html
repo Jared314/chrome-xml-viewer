@@ -134,10 +134,7 @@ li:hover{
 </style>
 
 <style>
-.reduced-tag-start {
-	padding-left:1.3em;
-	color:DarkRed;
-}
+.reduced-tag-start { color:DarkRed; }
 .reduced-tag-content { color:black; }
 .reduced-start-bracket { color:blue; }
 .reduced-end-bracket { color:#CCCCFF; }
@@ -146,15 +143,16 @@ li:hover{
 .reduced-attribute-value { color:blue; }
 </style>
 
-<!--<style>
-.standard-tag-start { color:DarkRed; }
-.standard-tag-content { color:black; }
-.standard-start-bracket { color:blue; }
-.standard-end-bracket { color:blue; }
-.standard-tag-end:not(.standard-tag-start) { color:DarkRed; }
-.standard-attribute-set, .standard-attribute-set * { color:DarkRed; }
-.standard-attribute-value { color:blue; }
-</style>-->
+<style>
+.color-scheme-firefox-example .tag-start { color:purple; font-weight:bold; }
+.color-scheme-firefox-example .tag-content { color:black; font-weight:normal; }
+.color-scheme-firefox-example .start-bracket { color:black; font-weight:normal; }
+.color-scheme-firefox-example .end-bracket { color:black; font-weight:normal; }
+.color-scheme-firefox-example .tag-end:not(.tag-start) { color:purple; font-weight:bold; }
+.color-scheme-firefox-example .attribute-set, .color-scheme-firefox-example .attribute-set * { color:black; font-weight:normal; }
+.color-scheme-firefox-example .attribute-name { color:black; font-weight:bold; }
+.color-scheme-firefox-example .attribute-value { color:blue; }
+</style>
 
 </head>
 
@@ -163,8 +161,8 @@ li:hover{
 <fieldset>
 <legend>XML Format</legend>
 <ol>
-<li><input type="radio" name="template_name" value="standard" id="template_name_standard" checked="checked"/><label for="template_name_standard">Standard <span class="example"><span class="standard-tag-start"><span class="standard-start-bracket">&lt;</span>item <span class="standard-attribute-set"><span class="standard-attribute-name">partNum</span>="<span class="standard-attribute-value">872-AA</span>"</span><span class="standard-start-bracket">&gt;</span></span><span class="standard-tag-content">Lawnmower</span><span class="standard-tag-end"><span class="standard-end-bracket">&lt;/</span>item<span class="standard-end-bracket">&gt;</span></span></span></label></li>
-<li><input type="radio" name="template_name" value="reduced" id="template_name_reduced" /><label for="template_name_reduced">Reduced <span class="example"><span class="reduced-tag-start">item <span class="reduced-attribute-set"><span class="reduced-attribute-name">partNum</span>="<span class="reduced-attribute-value">872-AA</span>"</span><span class="reduced-start-bracket">&gt;</span></span><span class="reduced-tag-content">Lawnmower</span><span class="reduced-tag-end"><span class="reduced-end-bracket">&lt;</span></span></span></label></li>
+<li><input type="radio" name="template_name" value="standard" id="template_name_standard" checked="checked"/><label for="template_name_standard">Standard&nbsp;<span class="example"><span class="standard-tag-start"><span class="standard-start-bracket">&lt;</span>item <span class="standard-attribute-set"><span class="standard-attribute-name">partNum</span>="<span class="standard-attribute-value">872-AA</span>"</span><span class="standard-start-bracket">&gt;</span></span><span class="standard-tag-content">Lawnmower</span><span class="standard-tag-end"><span class="standard-end-bracket">&lt;/</span>item<span class="standard-end-bracket">&gt;</span></span></span></label></li>
+<li><input type="radio" name="template_name" value="reduced" id="template_name_reduced" /><label for="template_name_reduced">Reduced&nbsp;&nbsp;&nbsp;<span class="example"><span class="reduced-tag-start">item <span class="reduced-attribute-set"><span class="reduced-attribute-name">partNum</span>="<span class="reduced-attribute-value">872-AA</span>"</span><span class="reduced-start-bracket">&gt;</span></span><span class="reduced-tag-content">Lawnmower</span><span class="reduced-tag-end"><span class="reduced-end-bracket">&lt;</span></span></span></label></li>
 <li><input type="radio" name="template_name" value="custom" id="template_name_custom" disabled="disabled"/><label for="template_name_custom" class="disabled">Custom (Not Implemented)</label></li>
 </ol>
 </fieldset>
@@ -172,7 +170,7 @@ li:hover{
 <legend>Color Scheme</legend>
 <ol>
 <li><input type="radio" name="color_scheme_name" value="standard" id="color_scheme_name_standard" checked="checked"/><label for="color_scheme_name_standard">Standard <span class="example"><span class="standard-tag-start"><span class="standard-start-bracket">&lt;</span>item <span class="standard-attribute-set"><span class="standard-attribute-name">partNum</span>="<span class="standard-attribute-value">872-AA</span>"</span><span class="standard-start-bracket">&gt;</span></span><span class="standard-tag-content">Lawnmower</span><span class="standard-tag-end"><span class="standard-end-bracket">&lt;/</span>item<span class="standard-end-bracket">&gt;</span></span></span></label></li>
-<li><input type="radio" name="color_scheme_name" value="firefox" id="color_scheme_name_firefox" /><label for="color_scheme_name_firefox">Firefox <span class="example"><span class="standard-tag-start"><span class="standard-start-bracket">&lt;</span>item <span class="standard-attribute-set"><span class="standard-attribute-name">partNum</span>="<span class="standard-attribute-value">872-AA</span>"</span><span class="standard-start-bracket">&gt;</span></span><span class="standard-tag-content">Lawnmower</span><span class="standard-tag-end"><span class="standard-end-bracket">&lt;/</span>item<span class="standard-end-bracket">&gt;</span></span></span></label></li>
+<li><input type="radio" name="color_scheme_name" value="firefox" id="color_scheme_name_firefox" /><label for="color_scheme_name_firefox">Firefox&nbsp;&nbsp;<span class="color-scheme-firefox-example"><span class="tag-start"><span class="start-bracket">&lt;</span>item <span class="attribute-set"><span class="attribute-name">partNum</span>="<span class="attribute-value">872-AA</span>"</span><span class="start-bracket">&gt;</span></span><span class="tag-content">Lawnmower</span><span class="tag-end"><span class="end-bracket">&lt;/</span>item<span class="end-bracket">&gt;</span></span></span></label></li>
 <li><input type="radio" name="color_scheme_name" value="custom" id="color_scheme_name_custom" disabled="disabled"/><label for="color_scheme_name_custom" class="disabled">Custom (Not Implemented)</label></li>
 </ol>
 </fieldset>
