@@ -10,10 +10,14 @@
 		});
 	
 	chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
-		if(request.name == "xmlviewer.getOptions")
-			sendResponse( {"templateName": ( localStorage['templateName'] || "reduced")} );
-		else if(request.name == "xmlviewer.setOptions"){
+		if(request.name == "xmlviewer.getOptions"){
+			sendResponse({
+					"templateName": (localStorage['templateName'] || "reduced"), 
+					"colorSchemeName": ( localStorage['colorSchemeName'] || "standard")
+				});
+		}else if(request.name == "xmlviewer.setOptions"){
 			localStorage['templateName'] = request.data['templateName'];
+			localStorage['colorSchemeName'] = request.data['colorSchemeName'];
 			sendResponse( true );
 		}
 	});

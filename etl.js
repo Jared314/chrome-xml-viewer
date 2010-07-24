@@ -313,9 +313,7 @@ function processNode(node, targetDocument){
 
 var xmlTransformer = function(d, targetd, obj){
 	//Initialize templates
-	var templateName = obj.templateName || 'standard';
-
-	template = template[templateName];
+	template = template[(obj.templateName || 'standard')];
 	for(var t in template)
 		template[t] = template[t].toDomTemplate(targetd);
 
@@ -419,9 +417,11 @@ var xmlDomLoader = function(d, targetd, obj){
 	if(!isXml(targetd)) return false;
 	
 	var templateName = obj.templateName || 'standard';
+	var colorSchemeName = obj.colorSchemeName || 'standard';
+	
 	//Attach CSS file
 	//TODO remove chrome extension dependency
-	var pi = targetd.createProcessingInstruction('xml-stylesheet', 'type="text/css" href="' + chrome.extension.getURL('xml.'+templateName+'.css') + '"');
+	var pi = targetd.createProcessingInstruction('xml-stylesheet', 'type="text/css" href="' + chrome.extension.getURL('xml.'+templateName+'.'+colorSchemeName+'.css') + '"');
 	targetd.insertBefore(pi, targetd.firstChild);
 
 	//Attach the new tree
@@ -469,9 +469,10 @@ var htmlXmlFileDomLoader = function(d, targetd, obj){
 	pre[0].parentNode.replaceChild(d, pre[0]);
 
 	var templateName = obj.templateName || 'standard';
+	var colorSchemeName = obj.colorSchemeName || 'standard';
 	//Append CSS
 	//TODO remove chrome extension dependency
-	targetd.insertHtmlLinkElement(chrome.extension.getURL('xml.'+templateName+'.css'));
+	targetd.insertHtmlLinkElement(chrome.extension.getURL('xml.'+templateName+'.'+colorSchemeName+'.css'));
 
 	return true;
 };
