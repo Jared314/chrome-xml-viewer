@@ -1,5 +1,29 @@
 <html>
 <script>
+	function showEnabledPageAction(tabId){
+			chrome.pageAction.setIcon({"path": "icon19.png", "tabId": tabId});
+			chrome.pageAction.setTitle({"tabId":tabId, "title":"XML Viewer Enabled"});
+			chrome.pageAction.show(tabId);
+	}
+	function showDisabledPageAction(tabId){
+			chrome.pageAction.setIcon({"path": "icon19_disabled.png", "tabId": tabId});
+			chrome.pageAction.setTitle({"tabId":tabId, "title":"XML Viewer Disabled"});
+			chrome.pageAction.show(tabId);
+	}
+	
+	function getOptions(){
+		return {
+			"templateName": (localStorage['templateName'] || "reduced"), 
+			"colorSchemeName": (localStorage['colorSchemeName'] || "standard"),
+			"enabled": (localStorage['enabled'] && localStorage['enabled'] == "false") ? false : true
+			};
+	}
+	function setOptions(data){
+		if(data['templateName'] != null) localStorage['templateName'] = data['templateName'];
+		if(data['colorSchemeName'] != null) localStorage['colorSchemeName'] = data['colorSchemeName'];
+		if(data['enabled'] != null) localStorage['enabled'] = String(data['enabled']);
+	}
+	
 	chrome.tabs.onUpdated.addListener(
 		function(tabId, changeInfo, tab) {
 			if(tab.status == "loading" && tab.url.match(/^https?:.+$/i) != null){
@@ -9,17 +33,34 @@
 			}
 		});
 	
-	chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
-		if(request.name == "xmlviewer.getOptions"){
-			sendResponse({
-					"templateName": (localStorage['templateName'] || "reduced"), 
-					"colorSchemeName": ( localStorage['colorSchemeName'] || "standard")
-				});
-		}else if(request.name == "xmlviewer.setOptions"){
-			localStorage['templateName'] = request.data['templateName'];
-			localStorage['colorSchemeName'] = request.data['colorSchemeName'];
-			sendResponse( true );
-		}
-	});
+	chrome.extension.onRequest.addListener(
+		function(request, sender, sendResponse){
+			if(request.name == "xmlviewer.getOptions"){
+				sendResponse(getOptions());
+			}else if(request.name == "xmlviewer.setOptions"){
+				setOptions(request.data);
+				sendResponse({});
+			}else if(request.name == "xmlviewer.showPageAction"){
+				if(getOptions().enabled)
+					showEnabledPageAction(sender.tab.id);
+				else
+					showDisabledPageAction(sender.tab.id);
+				
+				sendResponse({});
+			}
+		});
+	
+	chrome.pageAction.onClicked.addListener(
+		function(tab){
+			var en = getOptions().enabled;
+			//Swap enabled
+			setOptions({"enabled" : !en});
+
+			if(!en)
+				showEnabledPageAction(tab.id);
+			else
+				showDisabledPageAction(tab.id);
+		});
+
 </script>
 </html>

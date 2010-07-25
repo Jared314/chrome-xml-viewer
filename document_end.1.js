@@ -5,7 +5,14 @@ Document.prototype.isChromeViewSourcePage = function(){
 };
 
 if(!document.isChromeViewSourcePage()){
-	chrome.extension.sendRequest({"name": "xmlviewer.getOptions"}, function(response){
-		var result = etl.executeFirst(document, response);
+	chrome.extension.sendRequest({"name": "xmlviewer.getOptions"}, 
+		function(response){
+			var result = null;
+			if(response.enabled)
+				result = etl.executeFirst(document, response);
+			else
+				result = etl.extractors.executeFirst(document, response);				
+				
+			if(result) chrome.extension.sendRequest({"name": "xmlviewer.showPageAction"}, function(response){});
 		});
 }

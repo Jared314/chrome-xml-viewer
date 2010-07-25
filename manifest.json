@@ -8,6 +8,9 @@
 	"permissions" : ["tabs", "http://*/*", "https://*/*"],
 	"background_page": "background.html",
 	"options_page": "options.html",
+	"page_action": {
+		"default_icon": "icon19.png"
+	},
 	"content_scripts": [ {
 		"js": [ "xregexp-min.js", "etl.js", "document_end.1.js" ],
 		"matches": [ "file://*/*" ],
