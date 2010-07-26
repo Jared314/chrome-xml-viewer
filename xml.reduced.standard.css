@@ -14,7 +14,7 @@
 }
 
 
-div[class~="xml-viewer-document"]{
+[class~="xml-viewer-document"]{
 	font-family: DejaVu Sans Mono, Menlo, Consolas, Courier New, Lucida Console, serif;
 	font-size:11pt;
 	font-weight: normal;
@@ -30,7 +30,7 @@ div[class~="xml-viewer-document"]{
 
 
 /* 0.25 */
-div[class~="xml-viewer-inline"] > [class|="xml-viewer-tag"]{
+[class~="xml-viewer-inline"] > [class|="xml-viewer-tag"]{
 	display:inline;
 	padding-left:0;
 }
@@ -40,7 +40,7 @@ div[class~="xml-viewer-inline"] > [class|="xml-viewer-tag"]{
 	display:none;
 }
 
-span[class~="xml-viewer-tag-collapse-indicator"]{
+[class~="xml-viewer-tag-collapse-indicator"]{
 	visibility:hidden;
 	padding-left:0;
 	display:inline;
@@ -56,7 +56,7 @@ span[class~="xml-viewer-tag-collapse-indicator"]{
  * 0.1s
  */
 
-div[class~="xml-viewer-tag-content"]{
+[class~="xml-viewer-tag-content"]{
 	white-space:pre;
 	color:black;
 }
@@ -67,33 +67,33 @@ div[class~="xml-viewer-tag-content"]{
  * Tags
  * 3s
  */
-div[class~="xml-viewer-tag"]{
+[class~="xml-viewer-tag"]{
 	padding-left:0;
 }
 
-div[class~="xml-viewer-tag-collapsible"] span {
+[class~="xml-viewer-tag-collapsible"] span {
 	cursor:pointer;
 }
 
-div[class~="xml-viewer-tag-start"] {
+[class~="xml-viewer-tag-start"] {
 	padding-left:0em;
 	color:DarkRed;
 }
 
 
-span[class~="xml-viewer-start-bracket"]{
+[class~="xml-viewer-start-bracket"]{
 	padding-left:0em;
 	display:inline;
 	color:blue;
 }
-span[class~="xml-viewer-end-bracket"]{
+[class~="xml-viewer-end-bracket"]{
 	padding-left:0em;
 	display:inline;
 	color:#CCCCFF;
 }
 
 /* Tag Fade Effect */
-span[class~="xml-viewer-tag-end"]:not(span[class~="xml-viewer-tag-start"]){
+[class~="xml-viewer-tag-end"]:not([class~="xml-viewer-tag-start"]){
 	color:#E8CCCC;
 	padding-left:0em;	
 }
@@ -105,16 +105,16 @@ span[class~="xml-viewer-tag-end"]:not(span[class~="xml-viewer-tag-start"]){
  * 0.3s
  */
 
-div[class~="xml-viewer-processing-instruction"] {
+[class~="xml-viewer-processing-instruction"] {
 	color:blue;
 	padding-left:1.25em;
 }
 
-div[class~="xml-viewer-processing-instruction"]:before {
+[class~="xml-viewer-processing-instruction"]:before {
 	content:'<?';
 }
 
-div[class~="xml-viewer-processing-instruction"]:after {
+[class~="xml-viewer-processing-instruction"]:after {
 	content:'?>';
 }
 
@@ -124,7 +124,7 @@ div[class~="xml-viewer-processing-instruction"]:after {
  * CData 
  */
 
-pre[class~="xml-viewer-cdata"] {
+[class~="xml-viewer-cdata"] {
 	color:black;
 	white-space: pre-line;
 	margin-top:0px;
@@ -132,12 +132,12 @@ pre[class~="xml-viewer-cdata"] {
 	padding-left:1.25em;	
 }
 
-pre[class~="xml-viewer-cdata"]:before {
+[class~="xml-viewer-cdata"]:before {
 	color:blue;
 	content:'<![CDATA[';
 }
 
-pre[class~="xml-viewer-cdata"]:after {
+[class~="xml-viewer-cdata"]:after {
 	color:blue;
 	content:']]>';
 }
@@ -150,7 +150,7 @@ pre[class~="xml-viewer-cdata"]:after {
 
 /* 0.25s */
 
-span[class~="xml-viewer-attribute-set"], span[class~="xml-viewer-attribute-set"] *{
+[class~="xml-viewer-attribute-set"], [class~="xml-viewer-attribute-set"] *{
 	color:DarkRed;
 	cursor:inherit;
 	display:inline;
@@ -159,7 +159,7 @@ span[class~="xml-viewer-attribute-set"], span[class~="xml-viewer-attribute-set"]
 
 /* 0.1s */
 
-span[class~="xml-viewer-attribute-value"]{
+[class~="xml-viewer-attribute-value"]{
 	color:blue;
 }
 
@@ -169,7 +169,7 @@ span[class~="xml-viewer-attribute-value"]{
  * Comments
  */
 
-pre[class~="xml-viewer-comment"]{
+[class~="xml-viewer-comment"]{
 	color:gray;
 	display:block;
 	white-space: pre-line;
@@ -177,12 +177,12 @@ pre[class~="xml-viewer-comment"]{
 	margin-bottom:0px;	
 	padding-left:1.25em;
 }
-pre[class~="xml-viewer-comment"]:before {
+[class~="xml-viewer-comment"]:before {
 	color:blue;
 	content:'<!--';
 }
 
-pre[class~="xml-viewer-comment"]:after {
+[class~="xml-viewer-comment"]:after {
 	color:blue;
 	content:'-->';
 }
