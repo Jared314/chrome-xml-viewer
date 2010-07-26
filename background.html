@@ -14,12 +14,14 @@
 	function getOptions(){
 		return {
 			"templateName": (localStorage['templateName'] || "reduced"), 
+			"customTemplate": (localStorage['customTemplate'] || ""),
 			"colorSchemeName": (localStorage['colorSchemeName'] || "standard"),
 			"enabled": (localStorage['enabled'] && localStorage['enabled'] == "false") ? false : true
 			};
 	}
 	function setOptions(data){
 		if(data['templateName'] != null) localStorage['templateName'] = data['templateName'];
+		if(data['customTemplate'] != null) localStorage['customTemplate'] = data['customTemplate'];
 		if(data['colorSchemeName'] != null) localStorage['colorSchemeName'] = data['colorSchemeName'];
 		if(data['enabled'] != null) localStorage['enabled'] = String(data['enabled']);
 	}

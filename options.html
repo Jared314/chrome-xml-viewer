@@ -33,6 +33,7 @@ function get(){
 	var colorSchemeNameItem = document.querySelectorAll('input[name="color_scheme_name"]').first(function(item){return item.checked;});
 	return {
 		'templateName' : (templateNameItem)?templateNameItem.value:"standard",
+		'customTemplate' : "",
 		'colorSchemeName' : (colorSchemeNameItem)?colorSchemeNameItem.value:"standard"
 	};
 }
@@ -48,6 +49,10 @@ function handleOnLoad(){
 		items.forEach(function(item){ if(!item.disabled) item.addEventListener('click', handleSettingsChange, false); });
 		var items = document.querySelectorAll('input[name="color_scheme_name"]');
 		items.forEach(function(item){ if(!item.disabled) item.addEventListener('click', handleSettingsChange, false); });
+		
+		//Custom
+		if(response.colorSchemeName == "custom")
+			;
 	});
 }
 </script>
@@ -163,7 +168,7 @@ li:hover{
 <ol>
 <li><input type="radio" name="template_name" value="standard" id="template_name_standard" checked="checked"/><label for="template_name_standard">Standard&nbsp;<span class="example"><span class="standard-tag-start"><span class="standard-start-bracket">&lt;</span>item <span class="standard-attribute-set"><span class="standard-attribute-name">partNum</span>="<span class="standard-attribute-value">872-AA</span>"</span><span class="standard-start-bracket">&gt;</span></span><span class="standard-tag-content">Lawnmower</span><span class="standard-tag-end"><span class="standard-end-bracket">&lt;/</span>item<span class="standard-end-bracket">&gt;</span></span></span></label></li>
 <li><input type="radio" name="template_name" value="reduced" id="template_name_reduced" /><label for="template_name_reduced">Reduced&nbsp;&nbsp;&nbsp;<span class="example"><span class="reduced-tag-start">item <span class="reduced-attribute-set"><span class="reduced-attribute-name">partNum</span>="<span class="reduced-attribute-value">872-AA</span>"</span><span class="reduced-start-bracket">&gt;</span></span><span class="reduced-tag-content">Lawnmower</span><span class="reduced-tag-end"><span class="reduced-end-bracket">&lt;</span></span></span></label></li>
-<li><input type="radio" name="template_name" value="custom" id="template_name_custom" disabled="disabled"/><label for="template_name_custom" class="disabled">Custom (Not Implemented)</label></li>
+<li><input type="radio" name="template_name" value="custom" id="template_name_custom"/><label for="template_name_custom">Custom</label></li>
 </ol>
 </fieldset>
 <fieldset>
