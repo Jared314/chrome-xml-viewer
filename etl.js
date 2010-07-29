@@ -410,6 +410,14 @@ function isXml(elem){
 
 var xmlDomExtractor = function(d){
 	if(d == null || !isXml(d)) return false;
+	
+	if(d.querySelector('parsererror > div') != null){
+		console.group('XML Document');
+		console.error('XML parsing '+d.querySelector('parsererror > div').innerText);
+		console.groupEnd();
+		return false;
+	}
+	
 	return d;
 };
 
@@ -487,8 +495,12 @@ String.prototype.toDOM = function(){
 	var parser = new DOMParser();
 	var result = parser.parseFromString(value, "text/xml");
 	
-	if(result.getElementsByTagName('parsererror').length > 0)
+	if(result.querySelector('parsererror > div') != null){
+		console.group('XML Document');
+		console.error('XML parsing '+result.querySelector('parsererror > div').innerText);
+		console.groupEnd();
 		return null;
+	}
 	return result;
 };
 
