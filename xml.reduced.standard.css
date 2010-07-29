@@ -47,7 +47,7 @@ span[class~="xml-viewer-tag-collapse-indicator"]{
 	color:blue;
 }
 
-[class~="xml-viewer-visible"]{
+span[class~="xml-viewer-visible"]{
 	visibility:visible;
 }
 
@@ -159,7 +159,7 @@ span[class~="xml-viewer-attribute-set"], span[class~="xml-viewer-attribute-set"]
 
 /* 0.1s */
 
-span[class~="xml-viewer-attribute-value"]{
+span[class~="xml-viewer-attribute-value"]{file:///home/jared314/Projects/chrome-xml-viewer/test-documents/test2.xml.rss
 	color:blue;
 }
 
