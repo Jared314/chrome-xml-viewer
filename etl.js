@@ -29,7 +29,7 @@ Array.prototype.executeFirst = function(){
 //
 // templating
 //
-// template.tag = template.tag.toHtmlTemplate(document);
+// template.tag = template.tag.toDomTemplate(document);
 // templating.processTemplate(template.tag, {'name':'TAG','attributes':null,'value':document.createTextNode('testvalue')});
 //
 var templating = {};
@@ -106,6 +106,7 @@ String.prototype.toDomTemplate = function(d){
 
 	//pre-parse replacement points
 	fragment.values = generateReplacementGetters(fragment);
+	fragment.stringValue = this;
 	
 	return fragment;
 };
@@ -317,6 +318,9 @@ var xmlTransformer = function(d, targetd, obj){
 	for(var t in template)
 		template[t] = template[t].toDomTemplate(targetd);
 
+	//Pre-flight
+	processNode(targetd.createTextNode('init'), targetd);
+
 	//Transform DOM Nodes
 	var newRoot = processNode(d, targetd);
 
@@ -325,8 +329,8 @@ var xmlTransformer = function(d, targetd, obj){
 	if(doc.xmlVersion){
 		var xmlStandaloneText = doc.xmlStandalone ? 'yes' : 'no';
 		var xmlEncodingText = (doc.xmlEncoding ? doc.xmlEncoding : doc.inputEncoding);
-		xmlEncodingText = (xmlEncodingText) ? ' encoding="' + xmlEncodingText : '';
-		var xmlTextNode = 'xml version="'+doc.xmlVersion+'"'+xmlEncodingText+'" standalone="'+xmlStandaloneText+'" ';
+		xmlEncodingText = (xmlEncodingText) ? ' encoding="' + xmlEncodingText+'"' : '';
+		var xmlTextNode = 'xml version="'+doc.xmlVersion+'"'+xmlEncodingText+' standalone="'+xmlStandaloneText+'" ';
 		xmlTextNode = xmlTextNode.toNode(targetd, 'div', 'xml-viewer-processing-instruction');
 		newRoot.insertBefore(xmlTextNode, newRoot.firstChild);
 	}
@@ -465,15 +469,18 @@ var xmlFormatDomExtractor = function(d){
 	var isXml = pre.length == 1 && pre[0].childElementCount == 0 && r.test(pre[0].innerText);
 	if(!isXml) return false;
 	
-	pre = pre[0].innerText.toDOM();
-	return (pre)?pre:false;
+	var result = pre[0].innerText.toDOM();
+	if(result){
+		pre[0].removeChildren();
+		return result;
+	}else
+		return false;
 };
 
 var htmlXmlFileDomLoader = function(d, targetd, obj){
 	
 	var pre = targetd.querySelectorAll('body > pre');
 	if(pre.length != 1) return false;
-
 
 	var templateName = obj.templateName || 'standard';
 	var colorSchemeName = obj.colorSchemeName || 'standard';
@@ -493,6 +500,12 @@ etl.loaders.push(htmlXmlFileDomLoader);
 
 
 //Helpers
+Node.prototype.removeChildren = function(){
+	if(!this.hasChildNodes()) return;
+	while(this.firstChild)
+		this.removeChild(this.firstChild);
+};
+
 String.prototype.toDOM = function(){
 	var value = this.replace(/^\s+/,'');
 	var parser = new DOMParser();
