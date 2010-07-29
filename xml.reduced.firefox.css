@@ -14,7 +14,7 @@
 }
 
 
-[class~="xml-viewer-document"]{
+div[class~="xml-viewer-document"]{
 	font-family: DejaVu Sans Mono, Menlo, Consolas, Courier New, Lucida Console, serif;
 	font-size:11pt;
 	font-weight: normal;
@@ -30,7 +30,7 @@
 
 
 /* 0.25 */
-[class~="xml-viewer-inline"] > [class|="xml-viewer-tag"]{
+div[class~="xml-viewer-inline"] > [class|="xml-viewer-tag"]{
 	display:inline;
 	padding-left:0;
 }
@@ -40,7 +40,7 @@
 	display:none;
 }
 
-[class~="xml-viewer-tag-collapse-indicator"]{
+span[class~="xml-viewer-tag-collapse-indicator"]{
 	visibility:hidden;
 	padding-left:0;
 	display:inline;
@@ -48,7 +48,7 @@
 	font-weight:normal;
 }
 
-[class~="xml-viewer-visible"]{
+span[class~="xml-viewer-visible"]{
 	visibility:visible;
 }
 
@@ -57,7 +57,7 @@
  * 0.1s
  */
 
-[class~="xml-viewer-tag-content"]{
+div[class~="xml-viewer-tag-content"]{
 	white-space:pre;
 	color:black;
 }
@@ -68,35 +68,35 @@
  * Tags
  * 3s
  */
-[class~="xml-viewer-tag"]{
+div[class~="xml-viewer-tag"]{
 	padding-left:0;
 }
 
-[class~="xml-viewer-tag-collapsible"] span {
+div[class~="xml-viewer-tag-collapsible"] span {
 	cursor:pointer;
 }
 
-[class~="xml-viewer-tag-start"] {
+div[class~="xml-viewer-tag-start"] {
 	padding-left:0em;
 	color:purple;
 	font-weight:bold;
 }
 
 
-[class~="xml-viewer-start-bracket"]{
+span[class~="xml-viewer-start-bracket"]{
 	padding-left:0em;
 	display:inline;
 	color:black;
 	font-weight:normal;
 }
-[class~="xml-viewer-end-bracket"]{
+span[class~="xml-viewer-end-bracket"]{
 	padding-left:0em;
 	display:inline;
 	color:#CCCCCC;
 	font-weight:normal;
 }
 
-[class~="xml-viewer-tag-end"]:not([class~="xml-viewer-tag-start"]){
+div[class~="xml-viewer-tag-end"]:not([class~="xml-viewer-tag-start"]){
 	color:#D9B2D9;
 	padding-left:0em;
 	font-weight:bold;
@@ -109,18 +109,18 @@
  * 0.3s
  */
 
-[class~="xml-viewer-processing-instruction"] {
+div[class~="xml-viewer-processing-instruction"] {
 	color:#da70d6;
 	padding-left:1.25em;
 	font-weight:normal;	
 	font-style:italic;
 }
 
-[class~="xml-viewer-processing-instruction"]:before {
+div[class~="xml-viewer-processing-instruction"]:before {
 	content:'<?';
 }
 
-[class~="xml-viewer-processing-instruction"]:after {
+div[class~="xml-viewer-processing-instruction"]:after {
 	content:'?>';
 }
 
@@ -130,7 +130,7 @@
  * CData 
  */
 
-[class~="xml-viewer-cdata"] {
+pre[class~="xml-viewer-cdata"] {
 	color:black;
 	white-space: pre-line;
 	margin-top:0px;
@@ -138,14 +138,14 @@
 	padding-left:1.25em;	
 }
 
-[class~="xml-viewer-cdata"]:before {
+pre[class~="xml-viewer-cdata"]:before {
 	color:blue;
 	content:'<![CDATA[';
 	font-style:italic;
 	color:#da70d6;
 }
 
-[class~="xml-viewer-cdata"]:after {
+pre[class~="xml-viewer-cdata"]:after {
 	color:blue;
 	content:']]>';
 	font-style:italic;
@@ -160,7 +160,7 @@
 
 /* 0.25s */
 
-[class~="xml-viewer-attribute-set"], [class~="xml-viewer-attribute-set"] *{
+span[class~="xml-viewer-attribute-set"], span[class~="xml-viewer-attribute-set"] *{
 	color:black;
 	cursor:inherit;
 	display:inline;
@@ -169,11 +169,11 @@
 }
 
 /* 0.1s */
-[class~="xml-viewer-attribute-name"]{
+span[class~="xml-viewer-attribute-name"]{
 	font-weight:bold;
 }
 
-[class~="xml-viewer-attribute-value"]{
+span[class~="xml-viewer-attribute-value"]{
 	color:blue;
 	font-weight:normal;
 }
@@ -184,7 +184,7 @@
  * Comments
  */
 
-[class~="xml-viewer-comment"]{
+pre[class~="xml-viewer-comment"]{
 	color:green;
 	display:block;
 	white-space: pre-line;
@@ -193,12 +193,12 @@
 	padding-left:1.25em;
 	font-style:italic;
 }
-[class~="xml-viewer-comment"]:before {
+pre[class~="xml-viewer-comment"]:before {
 	color:green;
 	content:'<!--';
 }
 
-[class~="xml-viewer-comment"]:after {
+pre[class~="xml-viewer-comment"]:after {
 	color:green;
 	content:'-->';
 }
