@@ -8,6 +8,7 @@ if(!document.isChromeViewSourcePage()){
 	chrome.extension.sendRequest({"name": "xmlviewer.getOptions"}, 
 		function(response){
 			var result = null;
+			response.getURL = chrome.extension.getURL;
 			if(response.enabled)
 				result = etl.executeFirst(document, response);
 			else

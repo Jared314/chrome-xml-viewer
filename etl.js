@@ -428,9 +428,10 @@ var xmlDomLoader = function(d, targetd, obj){
 	var colorSchemeName = obj.colorSchemeName || 'standard';
 	
 	//Attach CSS file
-	//TODO remove chrome extension dependency
-	var pi = targetd.createProcessingInstruction('xml-stylesheet', 'type="text/css" href="' + chrome.extension.getURL('xml.'+templateName+'.'+colorSchemeName+'.css') + '"');
-	targetd.insertBefore(pi, targetd.firstChild);
+	if(obj.getURL){
+		var pi = targetd.createProcessingInstruction('xml-stylesheet', 'type="text/css" href="' + obj.getURL('xml.'+templateName+'.'+colorSchemeName+'.css') + '"');
+		targetd.insertBefore(pi, targetd.firstChild);
+	}
 
 	//Attach the new tree
 	if(document.documentElement)
@@ -479,9 +480,9 @@ var htmlXmlFileDomLoader = function(d, targetd, obj){
 	var templateName = obj.templateName || 'standard';
 	var colorSchemeName = obj.colorSchemeName || 'standard';
 	//Append CSS
-	//TODO remove chrome extension dependency
-	targetd.insertHtmlLinkElement(chrome.extension.getURL('xml.'+templateName+'.'+colorSchemeName+'.css'));
-
+	if(obj.getURL)
+		targetd.insertHtmlLinkElement(obj.getURL('xml.'+templateName+'.'+colorSchemeName+'.css'));
+	
 	return true;
 };
 
