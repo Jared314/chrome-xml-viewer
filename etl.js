@@ -473,16 +473,18 @@ var htmlXmlFileDomLoader = function(d, targetd, obj){
 	
 	var pre = targetd.querySelectorAll('body > pre');
 	if(pre.length != 1) return false;
-	
-	//Load
-	pre[0].parentNode.replaceChild(d, pre[0]);
+
 
 	var templateName = obj.templateName || 'standard';
 	var colorSchemeName = obj.colorSchemeName || 'standard';
 	//Append CSS
 	if(obj.getURL)
 		targetd.insertHtmlLinkElement(obj.getURL('xml.'+templateName+'.'+colorSchemeName+'.css'));
+
 	
+	//Load
+	pre[0].parentNode.replaceChild(d, pre[0]);
+
 	return true;
 };
 
@@ -506,13 +508,14 @@ String.prototype.toDOM = function(){
 };
 
 Document.prototype.insertHtmlHeadElement = function(){
-	if(this.head) return this.head;
-	var head = this.createElement('head');
+	head = this.createElement('head');
 	var html = this.querySelector('html');
-	if(!html){
+
+	if(html.length < 1){
 		html = this.createElement('html');
 		this.appendChild(html);
 	}
+
 	html.insertBefore(head, html.firstChild);
 	return head;
 }
