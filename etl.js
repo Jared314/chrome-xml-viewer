@@ -356,14 +356,46 @@ var xmlTransformer = function(d, targetd, obj){
 	return newRoot;
 };
 
+
+function showConsoleErrorMessage(text){
+	console.group('XML Document');
+	text = text.split('\n');
+	for(var i=0;i<text.length;i++)
+		if(text[i].length > 0){
+			if(text[i].indexOf('warning') == 0)
+				console.warn(text[i]);
+			else
+				console.error(text[i]);
+		}
+	console.groupEnd();
+}
+
+var errorTransformer = function(d, targetd, obj){
+	if(d.querySelector('parsererror > div') == null) return false;
+
+	//Show parsing error message(s) in the console	
+	var text = d.querySelector('parsererror > div').innerText;
+	showConsoleErrorMessage(text);
+
+	//Add error message to targetd
+	//Only xml documents not passed as xml will not have the error in the original document
+	if(targetd.querySelector('parsererror > div') == null){
+		var parseerror = d.querySelector('parsererror');
+
+		if(parseerror.ownerDocument != targetd)
+			parseerror = targetd.importNode(parseerror, true);
+			
+		var body = targetd.querySelector('body');
+		body.insertBefore(parseerror, body.firstChild);
+	}
+
+	return null;
+}
+
+
+
+etl.transformers.push(errorTransformer);
 etl.transformers.push(xmlTransformer);
-
-
-
-
-
-
-
 
 
 
@@ -435,13 +467,6 @@ function isXml(elem){
 var xmlDomExtractor = function(d){
 	if(d == null || !isXml(d)) return false;
 	
-	if(d.querySelector('parsererror > div') != null){
-		console.group('XML Document');
-		console.error('XML parsing '+d.querySelector('parsererror > div').innerText);
-		console.groupEnd();
-		return false;
-	}
-	
 	return d;
 };
 
@@ -490,11 +515,7 @@ var xmlFormatDomExtractor = function(d){
 	if(!isXml) return false;
 	
 	var result = pre[0].innerText.toDOM();
-	if(result){
-		pre[0].removeChildren();
-		return result;
-	}else
-		return false;
+	return (result) ? result : false;
 };
 
 var htmlXmlFileDomLoader = function(d, targetd, obj){
@@ -531,12 +552,6 @@ String.prototype.toDOM = function(){
 	var parser = new DOMParser();
 	var result = parser.parseFromString(value, "text/xml");
 	
-	if(result.querySelector('parsererror > div') != null){
-		console.group('XML Document');
-		console.error('XML parsing '+result.querySelector('parsererror > div').innerText);
-		console.groupEnd();
-		return null;
-	}
 	return result;
 };
 

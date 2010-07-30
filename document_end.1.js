@@ -14,6 +14,6 @@ if(!document.isChromeViewSourcePage()){
 			else
 				result = etl.extractors.executeFirst(document, response);				
 				
-			if(result) chrome.extension.sendRequest({"name": "xmlviewer.showPageAction"}, function(response){});
+			if(result === false) chrome.extension.sendRequest({"name": "xmlviewer.showPageAction"}, function(response){});
 		});
 }
