@@ -13,7 +13,7 @@ if(!document.isChromeViewSourcePage()){
 				result = etl.executeFirst(document, response);
 			else
 				result = etl.extractors.executeFirst(document, response);				
-				
-			if(result === false) chrome.extension.sendRequest({"name": "xmlviewer.showPageAction"}, function(response){});
+
+			if(result !== false) chrome.extension.sendRequest({"name": "xmlviewer.showPageAction"}, function(response){});
 		});
 }
