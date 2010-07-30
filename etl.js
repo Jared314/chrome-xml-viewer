@@ -132,6 +132,7 @@ function set(node, value){
 }
 
 templating.processTemplate = function(fragment, values){
+	if(typeof fragment === 'string') return this.processStringTemplate(fragment, values);
 	if(!fragment.values) return false;
 	
 	var n = fragment.cloneNode(true);
@@ -147,6 +148,16 @@ templating.processTemplate = function(fragment, values){
 					for(var i=0,l=fn.length;i<l;i++)
 						set(fn[i](n), value);
 			}
+
+	return n;
+};
+
+templating.processStringTemplate = function(fragment, values){
+	var n = fragment;
+
+	if(values)
+		for(var item in values)
+			n = n.replace(new RegExp('\\{'+item+'\\}', 'g'), (values[item]) ? values[item] : '');
 
 	return n;
 };
@@ -270,12 +281,10 @@ function buildTextNode(targetDocument, node){
 function processNode(node, targetDocument){
 	var children = new Array();
 
-	if(node.hasChildNodes()){
-		var child = node.firstChild;
-		while(child){
-			children.push(processNode(child, targetDocument));
-			child = child.nextSibling;
-		}
+	var child = node.firstChild;
+	while(child){
+		children.push(processNode(child, targetDocument));
+		child = child.nextSibling;
 	}
 
 	var result;
@@ -313,6 +322,8 @@ function processNode(node, targetDocument){
 
 
 var xmlTransformer = function(d, targetd, obj){
+	//if(targetd instanceof HTMLDocument) return false;
+	
 	//Initialize templates
 	template = template[(obj.templateName || 'standard')];
 	for(var t in template)
@@ -346,6 +357,14 @@ var xmlTransformer = function(d, targetd, obj){
 };
 
 etl.transformers.push(xmlTransformer);
+
+
+
+
+
+
+
+
 
 
 // Helpers
@@ -407,8 +426,9 @@ String.prototype.flip = function(value1, delimiter){
 (function(){
 
 function isXml(elem){
+	var excluded = ["HTML","WML","WML:WML","SVG"];
 	var documentElement = (elem ? elem.ownerDocument || elem : 0).documentElement;
-	return documentElement ? (documentElement.nodeName.toUpperCase() !== "HTML") : false;
+	return documentElement ? (excluded.indexOf(documentElement.nodeName.toUpperCase()) < 0) : false;
 };
 
 
