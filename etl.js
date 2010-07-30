@@ -5,9 +5,9 @@ var etl = {
 	,"executeFirst":function(d, obj){
 		obj = obj || {};
 		var data = this.extractors.executeFirst(d, obj);
-		if(data == null) return null;
+		if(data == null || data === false) return data;
 		data = this.transformers.executeFirst(data, d, obj);
-		if(data == null) return null;		
+		if(data == null || data === false) return data;
 		return this.loaders.executeFirst(data, d, obj);
 	}
 };
@@ -17,7 +17,7 @@ Array.prototype.executeFirst = function(){
 	for(var i=0,l=this.length;i<l && result === false;i++)
 		result = this[i].apply(this, arguments);
 
-	return (result === false)?null:result;
+	return (result === false)?false:result;
 };
 
 
@@ -509,6 +509,8 @@ etl.loaders.push(xmlDomLoader);
 
 var xmlFormatDomExtractor = function(d){
 	if(d == null) return false;
+	var excluded = ["HTML","WML","WML:WML","SVG"];
+	
 	var r = XRegExp('(^\\s*<\\?xml[^\\n]+)|(^\\s*<(\\S+).+</\\3>\\s*$)','si');
 	var pre = d.querySelectorAll('body > pre');
 	var isXml = pre.length == 1 && pre[0].childElementCount == 0 && r.test(pre[0].innerText);
