@@ -185,9 +185,9 @@ var template = {
 "attributes":'<span class="xml-viewer-attribute-set">{value}</span>',
 "inlineTag":'<div class="xml-viewer-tag xml-viewer-inline"><div class="xml-viewer-tag-start"><span><span class="xml-viewer-tag-collapse-indicator">+ </span><span class="xml-viewer-start-bracket">&lt;</span>{name}{attributes}<span class="xml-viewer-start-bracket">&gt;</span></span></div><div class="xml-viewer-tag-content">{value}</div><div class="xml-viewer-tag-end"><span class="xml-viewer-end-bracket">&lt;/</span>{name}<span class="xml-viewer-end-bracket">&gt;</span></div></div>',
 "singleTag":'<div class="xml-viewer-tag"><div class="xml-viewer-tag-start xml-viewer-tag-end"><span><span class="xml-viewer-tag-collapse-indicator">+ </span><span class="xml-viewer-start-bracket">&lt;</span>{name}{attributes}<span class="xml-viewer-start-bracket">/&gt;</span></span></div></div>',
-"processingInstruction":'<div class="xml-viewer-processing-instruction">{name}{value}</div>',
-"comment":'<pre class="xml-viewer-comment">{value}</pre>',
-"cdata":'<pre class="xml-viewer-cdata">{value}</pre>',
+"processingInstruction":'<div class="xml-viewer-processing-instruction"><span>&lt;?</span>{name}{value}<span>?&gt;</span></div>',
+"comment":'<pre class="xml-viewer-comment"><span class="xml-viewer-tag-start">&lt;!--</span>{value}<span class="xml-viewer-tag-end">--&gt;</span></pre>',
+"cdata":'<pre class="xml-viewer-cdata"><span class="xml-viewer-tag-start">&lt;![CDATA[</span>{value}<span class="xml-viewer-tag-end">]]&gt;</span></pre>',
 "document":'<div class="xml-viewer-document">{value}</div>'
 	},
 	"reduced":{
@@ -200,9 +200,9 @@ var template = {
 "attributes":'<span class="xml-viewer-attribute-set">{value}</span>',
 "inlineTag":'<div class="xml-viewer-tag xml-viewer-inline"><div class="xml-viewer-tag-start"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}<span class="xml-viewer-start-bracket">&gt;</span></span></div><div class="xml-viewer-tag-content">{value}</div><div class="xml-viewer-tag-end"><span class="xml-viewer-end-bracket">&lt;</span></div></div>',
 "singleTag":'<div class="xml-viewer-tag"><div class="xml-viewer-tag-start xml-viewer-tag-end"><span><span class="xml-viewer-tag-collapse-indicator">+ </span>{name}{attributes}</span></div></div>',
-"processingInstruction":'<div class="xml-viewer-processing-instruction">{name}{value}</div>',
-"comment":'<pre class="xml-viewer-comment">{value}</pre>',
-"cdata":'<pre class="xml-viewer-cdata">{value}</pre>',
+"processingInstruction":'<div class="xml-viewer-processing-instruction"><span>&lt;?</span>{name}{value}<span>?&gt;</span></div>',
+"comment":'<pre class="xml-viewer-comment"><span class="xml-viewer-tag-start">&lt;!--</span>{value}<span class="xml-viewer-tag-end">--&gt;</span></pre>',
+"cdata":'<pre class="xml-viewer-cdata"><span class="xml-viewer-tag-start">&lt;![CDATA[</span>{value}<span class="xml-viewer-tag-end">]]&gt;</span></pre>',
 "document":'<div class="xml-viewer-document">{value}</div>'
 	}
 };
@@ -341,8 +341,9 @@ var xmlTransformer = function(d, targetd, obj){
 		var xmlStandaloneText = doc.xmlStandalone ? 'yes' : 'no';
 		var xmlEncodingText = (doc.xmlEncoding ? doc.xmlEncoding : doc.inputEncoding);
 		xmlEncodingText = (xmlEncodingText) ? ' encoding="' + xmlEncodingText+'"' : '';
-		var xmlTextNode = 'xml version="'+doc.xmlVersion+'"'+xmlEncodingText+' standalone="'+xmlStandaloneText+'" ';
-		xmlTextNode = xmlTextNode.toNode(targetd, 'div', 'xml-viewer-processing-instruction');
+		var xmlTextNode = 'version="'+doc.xmlVersion+'"'+xmlEncodingText+' standalone="'+xmlStandaloneText+'" ';
+		xmlTextNode = templating.processTemplate(template.processingInstruction, {'name':'xml','value':' '+xmlTextNode});
+		
 		newRoot.insertBefore(xmlTextNode, newRoot.firstChild);
 	}
 

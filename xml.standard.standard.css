@@ -109,14 +109,6 @@ div[class~="xml-viewer-processing-instruction"] {
 	padding-left:1.25em;
 }
 
-div[class~="xml-viewer-processing-instruction"]:before {
-	content:'<?';
-}
-
-div[class~="xml-viewer-processing-instruction"]:after {
-	content:'?>';
-}
-
 
 
 /* 
@@ -131,14 +123,10 @@ pre[class~="xml-viewer-cdata"] {
 	padding-left:1.25em;	
 }
 
-pre[class~="xml-viewer-cdata"]:before {
+pre[class~="xml-viewer-cdata"] span[class~="xml-viewer-tag-start"], pre[class~="xml-viewer-cdata"] span[class~="xml-viewer-tag-end"] {
+	padding-left:0;
 	color:blue;
-	content:'<![CDATA[';
-}
-
-pre[class~="xml-viewer-cdata"]:after {
-	color:blue;
-	content:']]>';
+	display:inline;
 }
 
 
@@ -176,13 +164,9 @@ pre[class~="xml-viewer-comment"]{
 	margin-bottom:0px;	
 	padding-left:1.25em;
 }
-pre[class~="xml-viewer-comment"]:before {
-	color:blue;
-	content:'<!--';
-}
 
-pre[class~="xml-viewer-comment"]:after {
+pre[class~="xml-viewer-comment"] span[class~="xml-viewer-tag-start"], pre[class~="xml-viewer-comment"] span[class~="xml-viewer-tag-end"] {
 	color:blue;
-	content:'-->';
+	display:inline;
+	padding-left:0;	
 }
-
