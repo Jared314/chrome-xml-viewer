@@ -15,12 +15,15 @@
 		return {
 			"templateName": (localStorage['templateName'] || "reduced"), 
 			"colorSchemeName": (localStorage['colorSchemeName'] || "standard"),
+			"startCollapsed": (localStorage['startCollapsed'] && localStorage['startCollapsed'] == "false") ? false : true,
 			"enabled": (localStorage['enabled'] && localStorage['enabled'] == "false") ? false : true
 			};
 	}
+	
 	function setOptions(data){
 		if(data['templateName'] != null) localStorage['templateName'] = data['templateName'];
 		if(data['colorSchemeName'] != null) localStorage['colorSchemeName'] = data['colorSchemeName'];
+		if(data['startCollapsed'] != null) localStorage['startCollapsed'] = String(data['startCollapsed']);
 		if(data['enabled'] != null) localStorage['enabled'] = String(data['enabled']);
 	}
 	
