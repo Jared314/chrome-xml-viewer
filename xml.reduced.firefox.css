@@ -97,7 +97,7 @@ span[class~="xml-viewer-end-bracket"]{
 }
 
 div[class~="xml-viewer-tag-end"]:not([class~="xml-viewer-tag-start"]){
-	color:#D9B2D9;
+	color:#E6CCE6;
 	padding-left:0em;
 	font-weight:bold;
 }
