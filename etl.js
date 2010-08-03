@@ -332,7 +332,7 @@ function buildElementNode(node, newChildren, targetDocument, depth){
 
 		//Add node depth
 		if(!isTagInline)
-			result.firstChild.firstChild.firstChild.depth = depth;
+			result.firstChild.depth = depth;
 	}
 
 	return result;
