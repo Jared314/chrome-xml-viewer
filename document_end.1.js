@@ -33,7 +33,7 @@ if(!document.isChromeViewSourcePage()){
 				//Collapse/Expand level Event Handler
 				document.addEventListener('keyup', function(e){ 
 						var level = e.keyCode - 48;
-						if(level < 1 || level > 9 || !e.shiftKey) return;
+						if(level < 1 || level > 9 || !e.altKey) return;
 
 						var nodes = document.querySelectorAll("div[class~='xml-viewer-tag-collapsible']")
 							.filter(function(item){ return item.parentNode && item.parentNode.depth && item.parentNode.depth == level; });
@@ -57,7 +57,7 @@ if(!document.isChromeViewSourcePage()){
 				//Collapse/Expand all Event Handler
 				document.addEventListener('keyup', function(e){ 
 						var level = e.keyCode - 48;
-						if(level != 0 || !e.shiftKey) return;
+						if(level != 0 || !e.altKey) return;
 					
 						var nodes = document.querySelectorAll("div[class~='xml-viewer-tag-collapsible']");
 							

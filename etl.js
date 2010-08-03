@@ -290,7 +290,7 @@ function foldingHandler(event){
 		node.collapse();
 	
 	//if shift+click, then fold children
-	if(event.shiftKey){
+	if(event.altKey){
 		var nodes = node.querySelectorAll("div[class~='xml-viewer-tag-collapsible']").filter(function(item){return item.parentNode && item.parentNode != node;});
 		for(var i=0;i<nodes.length;i++){
 			var n = nodes[i];
