@@ -44,7 +44,7 @@ span[class~="xml-viewer-tag-collapse-indicator"]{
 	visibility:hidden;
 	padding-left:0;
 	display:inline;
-	color:blue;
+	color:#6666FF;
 }
 
 span[class~="xml-viewer-visible"]{
