@@ -283,11 +283,23 @@ function foldingHandler(event){
 	var node = event.target;
 	while(!node.getAttribute('class') || node.getAttribute('class').search(/xml-viewer-tag$/i) < 0)
 		node = node.parentNode;
-
-	if(node.isCollapsed())
+	var collapsed = node.isCollapsed();
+	if(collapsed)
 		node.expand();
 	else
 		node.collapse();
+	
+	//if shift+click, then fold children
+	if(event.shiftKey){
+		var nodes = node.querySelectorAll("div[class~='xml-viewer-tag-collapsible']").filter(function(item){return item.parentNode && item.parentNode != node;});
+		for(var i=0;i<nodes.length;i++){
+			var n = nodes[i];
+			if(collapsed)
+				n.parentNode.expand();
+			else
+				n.parentNode.collapse();
+		}
+	}
 }
 
 function addEventListeners(template, root){
