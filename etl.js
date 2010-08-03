@@ -20,7 +20,12 @@ Array.prototype.executeFirst = function(){
 	return (result === false)?false:result;
 };
 
-
+NodeList.prototype.filter = function(predicate){
+	var result = [];
+	for(var i=0,l=this.length;i<l;i++)
+		if(predicate(this[i])) result.push(this[i]);
+	return result;
+};
 
 
 
@@ -397,7 +402,7 @@ function processNode(node, targetDocument, depth){
 
 
 var xmlTransformer = function(d, targetd, obj){
-	//if(targetd instanceof HTMLDocument) return false;
+	var startCollapsed = (obj.startCollapsed == null) ? true : obj.startCollapsed;
 	
 	//Initialize templates
 	template = template[(obj.templateName || 'standard')];
@@ -425,6 +430,14 @@ var xmlTransformer = function(d, targetd, obj){
 
 	// Attach folding handlers
 	addEventListeners(template, newRoot);
+
+	if(startCollapsed){
+		var nodes = newRoot.querySelectorAll("div[class~='xml-viewer-tag-collapsible']")
+			.filter(function(item){ return item.parentNode && item.parentNode.depth && item.parentNode.depth > 1; });
+
+		for(var i=0;i<nodes.length;i++)
+			nodes[i].parentNode.collapse();
+	}
 
 	return newRoot;
 };

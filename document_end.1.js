@@ -4,12 +4,7 @@ Document.prototype.isChromeViewSourcePage = function(){
 		&& this.getElementsByTagName("tbody").length == 1;
 };
 
-NodeList.prototype.filter = function(predicate){
-	var result = [];
-	for(var i=0,l=this.length;i<l;i++)
-		if(predicate(this[i])) result.push(this[i]);
-	return result;
-};
+
 
 if(!document.isChromeViewSourcePage()){
 	chrome.extension.sendRequest({"name": "xmlviewer.getOptions"}, 
