@@ -4,7 +4,16 @@ Document.prototype.isChromeViewSourcePage = function(){
 		&& this.getElementsByTagName("tbody").length == 1;
 };
 
-
+function expandWithParents(node, predicate){
+	if(node.expand) node.expand();
+	
+	node = node.parentNode;
+	while(node != null && !predicate(node))
+		node = node.parentNode;
+	
+	if(node != null)
+		expandWithParents(node, predicate);
+}
 
 if(!document.isChromeViewSourcePage()){
 	chrome.extension.sendRequest({"name": "xmlviewer.getOptions"}, 
@@ -32,7 +41,10 @@ if(!document.isChromeViewSourcePage()){
 							if(collapse)
 								node.collapse();
 							else
-								node.expand();
+								expandWithParents(
+									node,
+									function(item){return item.depth != null && item.depth < level;}
+									);
 						}
 					
 					} , false);
