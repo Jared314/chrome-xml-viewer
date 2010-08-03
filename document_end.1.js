@@ -24,7 +24,6 @@ if(!document.isChromeViewSourcePage()){
 				document.addEventListener('keyup', function(e){ 
 						var level = e.keyCode - 48;
 						if(level < 1 || level > 9 || !e.shiftKey) return;
-						
 
 						var nodes = document.querySelectorAll("div[class~='xml-viewer-tag-collapsible']")
 							.filter(function(item){ return item.parentNode && item.parentNode.depth && item.parentNode.depth == level; });
@@ -43,16 +42,15 @@ if(!document.isChromeViewSourcePage()){
 					
 					} , false);
 				//Collapse/Expand all Event Handler
-				/*
 				document.addEventListener('keyup', function(e){ 
 						var level = e.keyCode - 48;
 						if(level != 0 || !e.shiftKey) return;
 					
-						var nodes = document.querySelectorAll("[class~='xml-viewer-tag-collapsible'] > span")
-							.filter(function(item){ return item.depth && item.depth == level; });
+						var nodes = document.querySelectorAll("div[class~='xml-viewer-tag-collapsible']");
 							
 						var collapse = null;
-						for(var i=0;node=nodes[i],i<nodes.length;i++){
+						for(var i=0;i<nodes.length;i++){
+							var node = nodes[i].parentNode;
 							if(collapse == null)
 								collapse = !node.isCollapsed();
 
@@ -63,7 +61,6 @@ if(!document.isChromeViewSourcePage()){
 						}
 					
 					} , false);
-				*/
 
 			}else
 				result = etl.extractors.executeFirst(document, response);				
