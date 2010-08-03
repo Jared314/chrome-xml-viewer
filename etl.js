@@ -188,7 +188,39 @@ var template = {
 "processingInstruction":'<div class="xml-viewer-processing-instruction"><span>&lt;?</span>{name}{value}<span>?&gt;</span></div>',
 "comment":'<pre class="xml-viewer-comment"><span class="xml-viewer-tag-start">&lt;!--</span>{value}<span class="xml-viewer-tag-end">--&gt;</span></pre>',
 "cdata":'<pre class="xml-viewer-cdata"><span class="xml-viewer-tag-start">&lt;![CDATA[</span>{value}<span class="xml-viewer-tag-end">]]&gt;</span></pre>',
-"document":'<div class="xml-viewer-document">{value}</div>'
+"document":'<div class="xml-viewer-document">{value}</div>',
+"isCollapsed":function(tagNode){
+	var indicator = tagNode.firstChild.firstChild.firstChild;
+	var content = tagNode.firstChild.nextSibling;
+
+	return indicator 
+		&& indicator.getAttribute('class') != null 
+		&& indicator.getAttribute('class').indexOf('xml-viewer-visible') > -1;
+},
+"collapse":function(tagNode){
+	var indicator = tagNode.firstChild.firstChild.firstChild;
+	var content = tagNode.firstChild.nextSibling;
+	
+	//Show collapse indicator
+	var c = indicator.getAttribute('class');
+	indicator.setAttribute('class', c.addWordUnique('xml-viewer-visible'));
+
+	//Hide contents
+	c = content.getAttribute('class');
+	content.setAttribute('class', c.addWordUnique('xml-viewer-hidden'));
+},
+"expand":function(tagNode){
+	var indicator = tagNode.firstChild.firstChild.firstChild;
+	var content = tagNode.firstChild.nextSibling;
+	
+	//Hide collapse indicator
+	var c = indicator.getAttribute('class');
+	indicator.setAttribute('class', c.removeWord('xml-viewer-visible'));
+
+	//Show contents
+	c = content.getAttribute('class');
+	content.setAttribute('class', c.removeWord('xml-viewer-hidden'));
+}
 	},
 	"reduced":{
 "tag" : '<div class="xml-viewer-tag">\
@@ -203,31 +235,69 @@ var template = {
 "processingInstruction":'<div class="xml-viewer-processing-instruction"><span>&lt;?</span>{name}{value}<span>?&gt;</span></div>',
 "comment":'<pre class="xml-viewer-comment"><span class="xml-viewer-tag-start">&lt;!--</span>{value}<span class="xml-viewer-tag-end">--&gt;</span></pre>',
 "cdata":'<pre class="xml-viewer-cdata"><span class="xml-viewer-tag-start">&lt;![CDATA[</span>{value}<span class="xml-viewer-tag-end">]]&gt;</span></pre>',
-"document":'<div class="xml-viewer-document">{value}</div>'
+"document":'<div class="xml-viewer-document">{value}</div>',
+"isCollapsed":function(tagNode){
+	var indicator = tagNode.firstChild.firstChild.firstChild;
+	var content = tagNode.firstChild.nextSibling;
+
+	return indicator 
+		&& indicator.getAttribute('class') != null 
+		&& indicator.getAttribute('class').indexOf('xml-viewer-visible') > -1;
+},
+"collapse":function(tagNode){
+	var indicator = tagNode.firstChild.firstChild.firstChild;
+	var content = tagNode.firstChild.nextSibling;
+	
+	//Show collapse indicator
+	var c = indicator.getAttribute('class');
+	indicator.setAttribute('class', c.addWordUnique('xml-viewer-visible'));
+
+	//Hide contents
+	c = content.getAttribute('class');
+	content.setAttribute('class', c.addWordUnique('xml-viewer-hidden'));
+},
+"expand":function(tagNode){
+	var indicator = tagNode.firstChild.firstChild.firstChild;
+	var content = tagNode.firstChild.nextSibling;
+	
+	//Hide collapse indicator
+	var c = indicator.getAttribute('class');
+	indicator.setAttribute('class', c.removeWord('xml-viewer-visible'));
+
+	//Show contents
+	c = content.getAttribute('class');
+	content.setAttribute('class', c.removeWord('xml-viewer-hidden'));
+}
 	}
 };
 
 //Event Handler
 function foldingHandler(event){
 	event.cancelBubble = true;	
+	//find node
+	var node = event.target;
+	while(!node.getAttribute('class') || node.getAttribute('class').search(/xml-viewer-tag$/i) < 0)
+		node = node.parentNode;
 
-	var t = event.target;
-	while(!t.getAttribute('class') || t.getAttribute('class').search(/\bxml-viewer-tag-collapsible\b/i) < 0)
-		t = t.parentNode;
-
-	var indicator = t.firstChild.firstChild;
-	var content = t.nextSibling;
-
-	//Show collapse indicator
-	var c = indicator.getAttribute('class');
-	indicator.setAttribute('class', c.flip('xml-viewer-visible'));
-
-	//Hide contents
-	c = content.getAttribute('class');
-	content.setAttribute('class', c.flip('xml-viewer-hidden'));
+	if(node.isCollapsed())
+		node.expand();
+	else
+		node.collapse();
 }
 
-function buildElementNode(node, newChildren, targetDocument){
+function addEventListeners(template, root){
+	var nodes = root.querySelectorAll("div[class~='xml-viewer-tag-collapsible']");
+	for(var i=0,l=nodes.length;i<l;i++){
+		var node = nodes[i].parentNode;
+		node.firstChild.firstChild.addEventListener("click", foldingHandler, false);
+		node.isCollapsed = function(){ return template.isCollapsed(this); };
+		node.collapse = function(){ return template.collapse(this); };
+		node.expand = function(){ return template.expand(this); };
+	}
+}
+
+
+function buildElementNode(node, newChildren, targetDocument, depth){
 
 	var hasChildren = newChildren && newChildren.length > 0;
 	var isTagInline = newChildren 
@@ -258,7 +328,11 @@ function buildElementNode(node, newChildren, targetDocument){
 		var contentEl = t.values['value'](result);
 		var p = contentEl.parentNode;
 		newChildren.reParent(p);
-		p.removeChild(contentEl);		
+		p.removeChild(contentEl);
+
+		//Add node depth
+		if(!isTagInline)
+			result.firstChild.firstChild.firstChild.depth = depth;
 	}
 
 	return result;
@@ -278,12 +352,13 @@ function buildTextNode(targetDocument, node){
 }
 
 //Recursively transform the nodes in a tree
-function processNode(node, targetDocument){
+function processNode(node, targetDocument, depth){
+	depth = (depth || 0);
 	var children = new Array();
 
 	var child = node.firstChild;
 	while(child){
-		children.push(processNode(child, targetDocument));
+		children.push(processNode(child, targetDocument, depth+1));
 		child = child.nextSibling;
 	}
 
@@ -291,7 +366,7 @@ function processNode(node, targetDocument){
 	
 	switch(node.nodeType){
 		case Node.ELEMENT_NODE:
-			result = buildElementNode(node, children, targetDocument);
+			result = buildElementNode(node, children, targetDocument, depth);
 			break;
 		case Node.TEXT_NODE:
 			result = buildTextNode(targetDocument, node);
@@ -327,7 +402,8 @@ var xmlTransformer = function(d, targetd, obj){
 	//Initialize templates
 	template = template[(obj.templateName || 'standard')];
 	for(var t in template)
-		template[t] = template[t].toDomTemplate(targetd);
+		if(typeof template[t] === 'string')
+			template[t] = template[t].toDomTemplate(targetd);
 
 	//Pre-flight
 	processNode(targetd.createTextNode('init'), targetd);
@@ -348,11 +424,7 @@ var xmlTransformer = function(d, targetd, obj){
 	}
 
 	// Attach folding handlers
-	var nodes = newRoot.querySelectorAll("div[class~='xml-viewer-tag-collapsible'] > span");
-	if(nodes && nodes.length > 0){
-		for(var i=0,l=nodes.length;i<l;i++)
-	 		nodes[i].addEventListener("click", foldingHandler, false);
-	}
+	addEventListeners(template, newRoot);
 
 	return newRoot;
 };
@@ -428,10 +500,20 @@ String.prototype.toNode = function(targetDocument, tagName, className){
 };
 
 String.prototype.removeWord = function(value, delimiter, options){
+	delimiter = delimiter || ' ';
+	options = options || 'gi';
 	if(!delimiter) delimiter = ' ';
-	var r = new RegExp('('+delimiter+')?' + value + '('+delimiter+')?', (options)?options:'g');
+	var r = new RegExp('('+delimiter+')?' + value + '('+delimiter+')?', options);
 	var m = this.match(r);
 	return (m) ? this.replace(r, (m[1] && m[2])? delimiter : '') : this;
+};
+
+String.prototype.addWordUnique = function(value1, delimiter){
+	delimiter = delimiter || ' ';
+	var result = this;
+	if(result.search(new RegExp('\\b' + value1 + '\\b', 'i')) < 0)
+		result += ((result.length > 0)?delimiter:'') + value1;
+	return result;
 };
 
 String.prototype.flip = function(value1, delimiter){
