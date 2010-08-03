@@ -15,6 +15,12 @@ function expandWithParents(node, predicate){
 		expandWithParents(node, predicate);
 }
 
+function collapseWithChildren(node){
+	var nodes = node.querySelectorAll("div[class~='xml-viewer-tag-collapsible']");
+	for(var i=0;i<nodes.length;i++)
+		nodes[i].parentNode.collapse();
+}
+
 if(!document.isChromeViewSourcePage()){
 	chrome.extension.sendRequest({"name": "xmlviewer.getOptions"}, 
 		function(response){
@@ -39,7 +45,7 @@ if(!document.isChromeViewSourcePage()){
 								collapse = !node.isCollapsed();
 
 							if(collapse)
-								node.collapse();
+								collapseWithChildren(node);
 							else
 								expandWithParents(
 									node,
