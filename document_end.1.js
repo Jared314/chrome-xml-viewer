@@ -32,6 +32,7 @@ if(!document.isChromeViewSourcePage()){
 				//TODO: Refactor this
 				//Collapse/Expand level Event Handler
 				document.addEventListener('keyup', function(e){ 
+						console.log(e);
 						var level = e.keyCode - 48;
 						if(level < 1 || level > 9 || !e.shiftKey) return;
 

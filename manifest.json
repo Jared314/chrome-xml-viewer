@@ -1,6 +1,6 @@
 {
 	"name": "XML Viewer",
-	"version": "1.1.2",
+	"version": "1.1.1",
 	"description": "Formats remote, and local, XML documents for easy viewing.",
 	"icons": { "16": "icon16.png",
 			   "48": "icon48.png",
@@ -12,7 +12,7 @@
 		"default_icon": "icon19.png"
 	},
 	"content_scripts": [ {
-		"js": [ "xregexp-min.js", "etl.compiled.js", "document_end.1.js" ],
+		"js": [ "xregexp-min.js", "etl.js", "document_end.1.js" ],
 		"matches": [ "file://*/*" ],
 		"run_at": "document_end"
 	} ]
